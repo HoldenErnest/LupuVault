@@ -7,3 +7,6 @@ configure apache wsgi:
     - create the environment `WSGIDaemonProcess lupuApp python-path=/<PATH>/LupuVault:/<PATH>/.venv/lib/python3.12/site-packages` `WSGIProcessGroup lupuApp`
     - make sure to make directories LupuVault and LupuVault/static have `Require all granted`
     - HTTPS works the same way but needs the cert/chain/key files included
+
+5/13/2025
+ - Configured MySQL

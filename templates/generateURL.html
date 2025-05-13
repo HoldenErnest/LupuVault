@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add User - LupuVault</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/lupu.css') }}">
+</head>
+<body>
+    <h2>Generated URLs</h2>
+    <h3>Normal User URL:</h3>
+    <div id="urlField" class="copyable">{{ normalkeyurl }}</div>
+    {% if adminkeyurl != "" %}
+    <h3>Admin User URL: (Single Use)</h3>
+    <div id="urlFieldAdmin" class="copyable">{{ adminkeyurl }}</div>
+    {% endif %}
+</body>
+</html>
