@@ -1,0 +1,84 @@
+<!-- Holden Ernest - 1/11/2024 -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; img-src *">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/listView.css') }}">
+    <title>LupuVault</title>
+  </head>
+  <body>
+    <div id="escape-focus" tabindex="-1"></div>
+    <!-- This is a placeholder item and will not be displayed vv -->
+    <div class="item placeholder" id="placeholder-item" tabindex="-1">
+      <div class="item-stats">
+        <div class="item-id">✔</div>
+        <div class="item-title"></div>
+        <div class="item-tags"></div>
+        <div class="item-rt"><span class="item-rating">0</span>/10</div>
+      </div>
+      <div class="item-dropdown">
+        <textarea class="item-notes" name="item-notes" maxlength="1000" placeholder="empty notes.."></textarea>
+        <div class="item-buttons">
+          <div class="delete-item">remove</div>
+          <div class="change-item-image" tabindex="-1">
+            <div class="first">image</div>
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+          </div>
+        </div>
+        <div class="item-image"><div></div></div>
+        <div class="item-date">1/1/2001</div>
+      </div>
+    </div>
+    <!-- This is a placeholder item for a list icon and will not be displayed ^^ -->
+    <div class="sidebar-list placeholder" id="sidebar-list" value=""></div>
+    <div class="notification placeholder" id="placeholder-noti" value=""></div>
+    <!--Start of the actual page-->
+    <div id="sidebar" title="**BETA** Lists are stored on the clients end currently, find them in '%appdata%\chimplist\clientLists'">
+      
+      <div id="add-list" class="sidebar-list" title="Start a new List" tabindex="-1">+
+        <div id="new-list-popup" title="">
+          <div id="new-list-text">New List</div>
+          <input id="new-list-input" placeholder="list name" maxlength="20" tabindex="-1"></input>
+          <div id="new-list-button">create</div>
+        </div>
+      </div>
+      <!--<div class="sidebar-menu" tabindex="-1"> settings icon-->
+      </div>
+    </div>
+
+    <!--Top menu-->
+    <div id="menu">
+      <input id="searchbar" title="Filter searches further by using #tags or a rating ~/10" type="text" name="searchbar" placeholder="search" maxlength="50">
+      <div id="add-item-btn">+</div>
+      <div id="menu-buttons">
+        
+        <label for="sorting"></label>
+        <select name="sorting" id="sort-list">
+          <option value="date">Date</option>
+          <option value="title">Title</option>
+          <option value="rating">Rating</option>
+          <option value="tags">Tags</option>
+        </select>
+        <button name="sort-order" id="sort-order">▲</button><!--▲▼-->
+      </div>
+    </div>
+    <div id="list-items"></div> <!--where the items live-->
+
+    <!-- Where the notifications are -->
+    <div id="notification-area"></div>
+
+    <div id="footer">
+      Lupusregina Version <span id="install-version">-</span>
+    </div>
+    <input class="checkbox" type="checkbox" id="save-check">
+    <label id="save-btn" for="save-check">save</label>
+
+    <script type="module" src="{{ url_for('static', filename='js/list.js') }}"></script>
+  </body>
+</html>

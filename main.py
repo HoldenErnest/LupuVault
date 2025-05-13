@@ -1,3 +1,7 @@
+# Holden Ernest - 5/12/2025
+# A Flask based web server for LupuVault
+# Production uses a wsgi to serve this
+
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit
 import os
@@ -16,12 +20,9 @@ socketio = SocketIO(app)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
-
-@app.route("/draw")
-def draw():
-    return render_template("draw.html")
+    return render_template("listView.html")
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True) # debug=True, , ssl_context=('./cert.pem', './key.pem')
+# Enable the venv: $ source /home/lupu/LupuVault/.venv/bin/activate

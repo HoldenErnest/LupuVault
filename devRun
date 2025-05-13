@@ -1,0 +1,4 @@
+#!/bin/bash
+npx tsc
+
+python main.py
