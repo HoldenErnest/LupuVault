@@ -39,7 +39,7 @@
     <div class="sidebar-list placeholder" id="sidebar-list" value=""></div>
     <div class="notification placeholder" id="placeholder-noti" value=""></div>
     <!--Start of the actual page-->
-    <div id="sidebar" title="**BETA** Lists are stored on the clients end currently, find them in '%appdata%\chimplist\clientLists'">
+    <div id="sidebar" title="Lists">
       
       <div id="add-list" class="sidebar-list" title="Start a new List" tabindex="-1">+
         <div id="new-list-popup" title="">
@@ -79,6 +79,6 @@
     <input class="checkbox" type="checkbox" id="save-check">
     <label id="save-btn" for="save-check">save</label>
 
-    <script type="module" src="{{ url_for('static', filename='js/list.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/listItems.js') }}"></script>
   </body>
 </html>

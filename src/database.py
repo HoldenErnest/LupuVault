@@ -5,9 +5,12 @@ import os
 import hashlib
 import uuid
 import mysql.connector
+from pathlib import Path
+import listHandler
 
-from dotenv import load_dotenv
-load_dotenv("/home/lupu/LupuVault/.env")
+dotenv_path = Path(__file__).resolve().parent.parent / '.env'
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(dotenv_path)
 
 ### Database initialization
 USER_TABLE = "users"
@@ -22,13 +25,14 @@ MY_DB = mysql.connector.connect(
 dbCursor = MY_DB.cursor()
 
 def _checkDBConnection():
+    global dbCursor
     if (not MY_DB.is_connected()):
         print("DB was disconnected, reconnecting..")
         MY_DB.connect(
             host="localhost", # localhost
-            user="lupuUser",#os.getenv('DB_USER'), # user
-            password="beans",#os.getenv('DB_PASS'), # pass
-            database="LupuVault"#os.getenv('DB_NAME') # DB
+            user=os.getenv('DB_USER'), # user
+            password=os.getenv('DB_PASS'), # pass
+            database=os.getenv('DB_NAME') # DB
         )
         dbCursor = MY_DB.cursor()
 
@@ -85,12 +89,36 @@ def getUserLevel(username):
         return _ul
     return False
 
-def getList(username, listname):
-    sql = "SELECT * FROM lists WHERE username = %s AND listname = %s limit 1"
-    vals = (username,listname)
+def userHasAccess(connectedUser, listOwner, listname, write):
+    if (connectedUser == listOwner):
+        return True
+    
+    sql = "SELECT guest, perms FROM guests WHERE owner = %s AND listname = %s AND guest = %s"
+    vals = (listOwner,listname,connectedUser)
     res = _trySelect(sql, vals)
     if (res):
-        return res
+        if (write): # if you NEED write perms
+            if (res[0][1] == "write"):
+                return True
+            else:
+                return False
+        return True
+    return False
+
+def addGuestToList(connectedUser, newGuest, listOwner, listname):
+    if (not connectedUser == listOwner):
+        return listHandler.createError(403, "Forbidden: '" + connectedUser + "' is not the owner of this list")
+
+def getListDict(connectedUser, listOwner, listname):
+    """Returns a JSON object of the requested list"""
+    if (not userHasAccess(connectedUser, listOwner, listname, False)):
+        return listHandler.createError(403, "Forbidden: '" + connectedUser + "' does not have access to this list")
+
+    sql = "SELECT * FROM listData WHERE owner = %s AND listname = %s"
+    vals = (listOwner,listname)
+    res = _trySelect(sql, vals)
+    if (res):
+        return listHandler.listSQLToDict(dbCursor, res)
 
 def createUser(username, password):
     """Create a new user, username MUST be unique. Password is salted and hashed"""

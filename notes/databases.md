@@ -28,9 +28,11 @@ title varchar(64) NOT NULL,
 notes varchar(1000),
 rating tinyint DEFAULT 0,
 date datetime DEFAULT (CURRENT_DATE),
+imageURL varchar(350),
 PRIMARY KEY (owner, listname, title)
 );
 ```
+`Insert into listData (owner, listname, title) values ('jim','aList','listItem1');` - Create a new list item in /list/jim/aList
 
 ### guests:
 
@@ -39,8 +41,9 @@ The owner is a part of the list name, therefore it is always the combined primar
 CREATE TABLE guests (
 owner varchar(32) NOT NULL,
 listname varchar(64) NOT NULL,
-guest varchar(32) NOT NULL
-perms ENUM('write', 'read') DEFUALT "read"
+guest varchar(32) NOT NULL,
+perms ENUM('write', 'read') DEFAULT 'read',
 PRIMARY KEY (owner, listname)
 );
 ```
+`Insert into guests (owner, listname, guest) values ('jim','aList','dean');` - Give dean read permissions on /list/jim/aList

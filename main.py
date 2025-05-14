@@ -2,7 +2,7 @@
 # A Flask based web server for LupuVault
 # Production uses a wsgi to serve this
 
-from flask import Flask, render_template, session, request, redirect, request
+from flask import *
 from flask_socketio import SocketIO, send, emit
 import os
 import sys
@@ -14,7 +14,7 @@ import secretkeys
 
 # load the .env variables into the environment
 from dotenv import load_dotenv
-load_dotenv("/home/lupu/LupuVault/.env")
+load_dotenv()
 
 # ensure the templates know the mime types of the downloaded script files
 import mimetypes
@@ -22,7 +22,7 @@ mimetypes.add_type('application/javascript', '.js')
 mimetypes.add_type('application/typescript', '.ts')
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "ASfgassagfasgfgfsag"# os.getenv('FLASK_KEY')
+app.config['SECRET_KEY'] = os.getenv('FLASK_KEY')
 socketio = SocketIO(app)
 
 def getUsername():
@@ -34,12 +34,27 @@ def signedIn():
         return False
     return database.hasUser(session["username"], session["password"]) #! you need to store the hash of the password instead
 
+@app.route('/error')
+def return_error():
+    data = {'error': 'Not found'}
+    return make_response(jsonify(data), 404)
+
 ### APP WEB PAGES
 @app.route("/")
 def indexPage():
+    """Go to your default list"""
     if (not signedIn()):
-        return redirect("/list/login")
+        return redirect("/login")
     return render_template("listView.html")
+
+@app.route("/list/<user>/<listname>")
+def getList(user, listname):
+    """Strictly API route"""
+    if (not signedIn()):
+        return redirect("/login")
+    currentUser = session["username"]
+    
+    return jsonify(database.getListDict(currentUser, user, listname))
 
 @app.route("/login", methods=['get'])
 def loginPageGet():
@@ -55,7 +70,7 @@ def loginPagePost():
     if (database.hasUser(username, password)):
         session["username"] = username
         session["password"] = password
-        return redirect("/list")
+        return redirect("/")
 
     return loginPageGet()#redirect("/login")
 
@@ -63,7 +78,7 @@ def loginPagePost():
 def generateURL():
     """Generate a new user URL if you can"""
     if (not signedIn()):
-        return redirect("/list/login")
+        return redirect("/login")
     
     username = session["username"]
     _ul = database.getUserLevel(username)
