@@ -7,7 +7,7 @@ import uuid
 import mysql.connector
 
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv("/home/lupu/LupuVault/.env")
 
 ### Database initialization
 USER_TABLE = "users"
@@ -26,9 +26,9 @@ def _checkDBConnection():
         print("DB was disconnected, reconnecting..")
         MY_DB.connect(
             host="localhost", # localhost
-            user=os.getenv('DB_USER'), # user
-            password=os.getenv('DB_PASS'), # pass
-            database=os.getenv('DB_NAME') # DB
+            user="lupuUser",#os.getenv('DB_USER'), # user
+            password="beans",#os.getenv('DB_PASS'), # pass
+            database="LupuVault"#os.getenv('DB_NAME') # DB
         )
         dbCursor = MY_DB.cursor()
 

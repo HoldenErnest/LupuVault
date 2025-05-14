@@ -14,19 +14,16 @@ import secretkeys
 
 # load the .env variables into the environment
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv("/home/lupu/LupuVault/.env")
 
 # ensure the templates know the mime types of the downloaded script files
 import mimetypes
 mimetypes.add_type('application/javascript', '.js')
 mimetypes.add_type('application/typescript', '.ts')
 
-
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('FLASK_KEY')
+app.config['SECRET_KEY'] = "ASfgassagfasgfgfsag"# os.getenv('FLASK_KEY')
 socketio = SocketIO(app)
-
-
 
 def getUsername():
     return session["username"]
@@ -41,7 +38,7 @@ def signedIn():
 @app.route("/")
 def indexPage():
     if (not signedIn()):
-        return redirect("/login")
+        return redirect("/list/login")
     return render_template("listView.html")
 
 @app.route("/login", methods=['get'])
@@ -58,7 +55,7 @@ def loginPagePost():
     if (database.hasUser(username, password)):
         session["username"] = username
         session["password"] = password
-        return redirect("/")
+        return redirect("/list")
 
     return loginPageGet()#redirect("/login")
 
@@ -66,7 +63,7 @@ def loginPagePost():
 def generateURL():
     """Generate a new user URL if you can"""
     if (not signedIn()):
-        return redirect("/login")
+        return redirect("/list/login")
     
     username = session["username"]
     _ul = database.getUserLevel(username)

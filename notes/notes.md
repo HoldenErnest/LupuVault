@@ -10,3 +10,7 @@ configure apache wsgi:
 
 5/13/2025
  - Configured MySQL
+ - Configured a OneTime-use URL system for creating new users
+    - as an admin you can generate a url with a onetime use key
+    - the key is stored with additional info like new userlevel and expire time
+    - when the url is used, remove the onetime key from the system.
