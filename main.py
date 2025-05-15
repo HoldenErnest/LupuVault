@@ -46,11 +46,6 @@ def redirect_trailing_slash(path):
     """Redirect any sites that end in a '/' to go to the page that doesnt have a '/'"""
     return redirect('/' + path)
 
-@app.route("/asd")
-def asd():
-    database.createUser("solarranks", "the bean", "owner")
-    return "made user"
-
 @app.route("/")
 def indexPage():
     """Go to your default list"""

@@ -1,3 +1,1 @@
-fix the path issues (
-    `lupu.app/asd/` should route to `lupu.app/asd`
-)
+Host page /favicon.ico/ so goolge stops whining (make non transparent background for other icons)
