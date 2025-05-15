@@ -1,4 +1,4 @@
-![LupuVault](static/img/favicon-x256.png)
+<img src="static/img/favicon-x256.png" stype="max-width: fit-content; margin-left: auto; margin-right: auto;">
 
 
 # LupuVault
@@ -12,7 +12,7 @@ Login to [LupuVault](https://lupu.app/login) to view as a guest! Or Message an a
  - password: `guest`
 
 
-## :tools: Setup
+## :hammer: Setup
 
 - Clone Repository
 - Ensure Python and pip are installed
