@@ -1,4 +1,6 @@
-<img src="static/img/favicon-x256.png" stype="max-width: fit-content; margin-left: auto; margin-right: auto;">
+<p align="center">
+  <img src="static/img/favicon-x256.png" />
+</p>
 
 
 # LupuVault
