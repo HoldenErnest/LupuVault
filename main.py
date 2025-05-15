@@ -11,6 +11,7 @@ import sys
 sys.path.insert(0, '/home/lupu/LupuVault/src')
 import database
 import secretkeys
+import apis
 
 # load the .env variables into the environment
 from dotenv import load_dotenv
@@ -29,16 +30,22 @@ socketio = SocketIO(app)
 def getUsername():
     return session["username"]
 
+def getPassword():
+    return session["password"]
+
 def signedIn():
     """Check to make sure the user is signed in on the session variable"""
     if (not "username" in session or not "password" in session):
         return False
-    return database.hasUser(session["username"], session["password"]) #! you need to store the hash of the password instead
+    return database.hasUser(session["username"], session["password"])
 
-@app.route('/error')
-def return_error():
-    data = {'error': 'Not found'}
-    return make_response(jsonify(data), 404)
+def loginWithNoti(status, message):
+    """Returns a redirect to Login with an error message"""
+    createNotification(status, message)
+    return redirect("/login")
+
+def createNotification(status, message):
+    apis.saveNotification(getUsername(), status, message)
 
 ### APP WEB PAGES
 @app.route('/<path:path>/')
@@ -50,17 +57,25 @@ def redirect_trailing_slash(path):
 def indexPage():
     """Go to your default list"""
     if (not signedIn()):
-        return redirect("/login")
+        return loginWithNoti("warning", "Please sign in")
     return render_template("listView.html")
 
-@app.route("/list/<user>/<listname>")
-def getList(user, listname):
+### APIS
+@app.route("/api/notifications/<user>")
+def getNotifications(user):
+    """Returns a json list of all notifications, to be grabbed from ajax calls"""
+    apis.getNotifications(user)
+
+@app.route("/list/<owner>/<listname>")
+def getList(owner, listname):
     """Strictly API route"""
     if (not signedIn()):
-        return redirect("/login")
-    currentUser = session["username"]
+        return loginWithNoti("warning", "Please sign in")
+    currentUser = getUsername()
     
-    return jsonify(database.getListDict(currentUser, user, listname))
+    return jsonify(database.getListDict(currentUser, owner, listname))
+
+### END APIS
 
 @app.route("/login", methods=['get'])
 def loginPageGet():
@@ -74,20 +89,20 @@ def loginPagePost():
     password = request.form.get('password', False)
 
     if (not username or not password):
-        return redirect("/login")
+        return loginWithNoti("error", "Login info not entered")
 
     if (database.hasUser(username, password)):
         session["username"] = username
         session["password"] = password
         return redirect("/")
 
-    return redirect("/login") #TODO: make these login redirects also POST a notification error
+    return loginWithNoti("warning", "Username or Password incorrect")
 
 @app.route("/newuser")
 def generateURL():
     """Generate a new user URL if you can"""
     if (not signedIn()):
-        return redirect("/login")
+        return loginWithNoti()
     
     username = session["username"]
     _ul = database.getUserLevel(username)
