@@ -1,21 +1,33 @@
+<!-- Holden Ernest - 1/11/2024 -->
+
+<!DOCTYPE html>
 <html>
 
 <head>
-    <title>ASFafs</title>
+    <title>New User - LupuVault</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-x32.png') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/generic.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
-    <h1>Create a new User</h1>
-    <form method="POST">
-        <input type="text"
-                name="username"
-                placeholder="Username">
-        <input type="password"
-                name="password"
-                placeholder="Password">
-        <button type="submit">create</button>
-    </form>
+    <div class="notification placeholder" id="placeholder-noti" value=""></div>
+
+    <div id="notification-area"></div>
+    <div id="all-center">
+      <div id="title">Create User</div>
+      <form method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" class="genericInput" name="username" maxlength="30" placeholder="username.." required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" class="genericInput" name="password" maxlength="30" placeholder="password.." required><br><br>
+        <button id="login" class="genericButton">Login</button>
+      </form>
+      <div class="tips-text">You've been given an opportunity for a new user, dont blunder it</div>
+    </div>
 </body>
 
 </html>

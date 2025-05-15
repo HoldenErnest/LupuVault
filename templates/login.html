@@ -3,11 +3,12 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Login - LupuVault</title>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/generic.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/loginStyles.css') }}">
-    <title>Login - LupuVault</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-x32.png') }}">
   </head>
   <body>
@@ -18,12 +19,12 @@
       <div id="title">Login</div>
       <form method="post">
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username" maxlength="30" placeholder="username.." required><br><br>
+        <input type="text" id="username" class="genericInput" name="username" maxlength="30" placeholder="username.." required><br><br>
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" maxlength="30" placeholder="password.." required><br><br>
-        <button id="login">Login</button>
+        <input type="password" id="password" class="genericInput" name="password" maxlength="30" placeholder="password.." required><br><br>
+        <button id="login" class="genericButton">Login</button>
       </form>
-      <div id="help-text">If you do not have an account and would like one, message an admin</div>
+      <div class="tips-text">If you do not have an account and would like one, message an admin</div>
     </div>
 
     <script type="module" src="{{ url_for('static', filename='js/generic.js') }}"></script>

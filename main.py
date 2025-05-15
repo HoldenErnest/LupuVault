@@ -39,11 +39,6 @@ def signedIn():
         return False
     return database.hasUser(session["username"], session["password"])
 
-def loginWithNoti(status, message):
-    """Returns a redirect to Login with an error message"""
-    createNotification(status, message)
-    return redirect("/login")
-
 def createNotification(status, message):
     apis.saveNotification(getUsername(), status, message)
 
@@ -57,7 +52,7 @@ def redirect_trailing_slash(path):
 def indexPage():
     """Go to your default list"""
     if (not signedIn()):
-        return loginWithNoti("warning", "Please sign in")
+        return redirect("/login") #! warning noti
     return render_template("listView.html")
 
 ### APIS
@@ -70,7 +65,7 @@ def getNotifications(user):
 def getList(owner, listname):
     """Strictly API route"""
     if (not signedIn()):
-        return loginWithNoti("warning", "Please sign in")
+        return redirect("/login") #! warning noti
     currentUser = getUsername()
     
     return jsonify(database.getListDict(currentUser, owner, listname))
@@ -89,20 +84,20 @@ def loginPagePost():
     password = request.form.get('password', False)
 
     if (not username or not password):
-        return loginWithNoti("error", "Login info not entered")
+        return redirect("/login") #! warning noti
 
     if (database.hasUser(username, password)):
         session["username"] = username
         session["password"] = password
         return redirect("/")
 
-    return loginWithNoti("warning", "Username or Password incorrect")
+    return redirect("/login") #! warning noti
 
 @app.route("/newuser")
 def generateURL():
     """Generate a new user URL if you can"""
     if (not signedIn()):
-        return loginWithNoti()
+        return redirect("/login")
     
     username = session["username"]
     _ul = database.getUserLevel(username)

@@ -1,7 +1,39 @@
-/* #region FullBody */
+/* Holden Ernest - 5/14/2025 */
+
+/* #region Main */
+#title {
+    padding-bottom: 30px;
+    font-size: 30px;
+    font-weight: bold;
+}
 body {
-    background-color: #222;
-    color: lightgray;
+    background-color: #333;
+    color: gainsboro;
+    user-select: none;
+}
+body::-webkit-scrollbar {
+    display: none;
+}
+.placeholder {
+    display: none !important;
+}
+/* #endregion */
+
+/* #region Tips */
+.tips-text {
+    padding-top: 50px;
+    margin:auto;
+    width: 90%;
+    color: grey;
+}
+/* #endregion */
+
+/* #region Spacing*/
+#all-center {
+    width: 50%;
+    text-align: center;
+    margin: auto;
+    margin-top: 15%;
 }
 /* #endregion */
 
@@ -11,8 +43,8 @@ body {
     cursor: grab;
     border-radius: 5px;
     border: 1px solid black;
-    background-color: #333;
-    color:#555;
+    background-color: #444;
+    color:#666;
     display: inline;
     padding: 15px;
     
@@ -30,67 +62,87 @@ body {
 
 /* #region Inputs */
 .genericButton {
-
+	color: grey;
+    width: 50px;
+    height: 30px;
+    background-color: #222;
+    border: none;
+    overflow: auto;
+    outline: none;
+  	-webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;	
 }
 .genericButton:hover {
-    
+    cursor: pointer;
+    background-color: #444;
 }
 .genericInput {
-
+	padding-left: 5px;
+    height: 25px;
+    width: 200px;
+    overflow: auto;
+    outline: none;
+  	-webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    background-color: #444;
+    color: #CCC;
+    border: 2px solid #222;
 }
 /* #endregion */
 
 /* #region Notifications */
 #notification-area {
-  position: fixed;
-  right: 0px;
-  top: 20px;
-  width: 200px;
-  overflow: hidden;
-  padding-right: 20px;
-  padding-top: 5px;
-  z-index: 1;
+	position: fixed;
+	right: 0px;
+	top: 20px;
+	width: 200px;
+	overflow: hidden;
+	padding-right: 20px;
+	padding-top: 5px;
+	z-index: 1;
 }
 
 #notification-area .notification {
-  float: right;
-  max-width: 100%;
-  display: block;
-  color: #f2f2f2;
-  padding: 8px;
-  margin-bottom: 5px;
-  text-decoration: none;
-  user-select: none;
-  border-radius: 3px;
-  animation-duration: 0.5s;
-  animation-name: slidein;
+	float: right;
+	max-width: 100%;
+	display: block;
+	color: #f2f2f2;
+	padding: 8px;
+	margin-bottom: 5px;
+	text-decoration: none;
+	user-select: none;
+	border-radius: 3px;
+	animation-duration: 0.5s;
+	animation-name: slidein;
 }
 .notification.error {
-  border: solid 1px red;
-  background-color: rgba(98, 0, 0, 0.7);
-  opacity: 0.7;
+	border: solid 1px red;
+	background-color: rgba(98, 0, 0, 0.7);
+	opacity: 0.7;
 }
 .notification.warning {
-  border: solid 1px orange;
-  background-color: rgba(108, 73, 19, 0.7);
-  opacity: 0.7;
+	border: solid 1px orange;
+	background-color: rgba(108, 73, 19, 0.7);
+	opacity: 0.7;
 }
 .notification.success {
-  border: solid 1px rgb(0, 200, 0);
-  background-color: rgba(0, 95, 0, 0.7);
-  opacity: 0.7;
+	border: solid 1px rgb(0, 200, 0);
+	background-color: rgba(0, 95, 0, 0.7);
+	opacity: 0.7;
 }
 .notification:hover {
-  opacity: 1.0;
+	opacity: 1.0;
 }
 @keyframes slidein {
-  from {
-    translate: 100vw 0;
-    scale: 200% 1;
-  }
-  to {
-    translate: 0 0;
-    scale: 100% 1;
-  }
+	from {
+	translate: 100vw 0;
+	scale: 200% 1;
+	}
+	to {
+	translate: 0 0;
+	scale: 100% 1;
+	}
 }
 /* #endregion */

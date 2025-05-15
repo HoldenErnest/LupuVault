@@ -1,22 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add User - LupuVault</title>
+    <title>New Key - LupuVault</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-x32.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/generic.css') }}">
+    <link rel="stylesheet" href="../static/css/generic.css">
     
 </head>
 <body>
-    <h2>Generated URLs</h2>
-    <p>Click to copy the generated URL. The link will be active for 1 Hour. Send it to your friends</p>
+    <div class="notification placeholder" id="placeholder-noti" value=""></div>
+    <div id="notification-area"></div>
 
-    <h3>Normal User URL:</h3>
-    <div id="urlField" class="copyable">{{ normalkeyurl }}</div>
-    {% if adminkeyurl != "" %}
-    </br>
-    <h3>Admin User URL: (Single Use)</h3>
-    <div id="urlFieldAdmin" class="copyable">{{ adminkeyurl }}</div>
-    {% endif %}
+    <div id="all-center">
+        <div id="title">Generated URLs</div>
+        <h3>Normal User URL:</h3>
+        <div id="urlField" class="copyable">{{ normalkeyurl }}</div>
+        {% if adminkeyurl != "" %}
+        </br>
+        </br>
+        <h3>Admin User URL: (Single Use)</h3>
+        <div id="urlFieldAdmin" class="copyable">{{ adminkeyurl }}</div>
+        {% endif %}
+        <div class="tips-text">Click to copy the generated URL. The link will be active for 1 Hour. Send it to your friends</div>
+    </div>
 
     <script type="module" src="{{ url_for('static', filename='js/generic.js') }}"></script>
 </body>
