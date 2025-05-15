@@ -1,0 +1,25 @@
+{
+  "name": "LupuVault",
+  "short_name": "LupuVault",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#222",
+  "theme_color": "#222222",
+  "icons": [
+    {
+      "src": "{{ url_for('static', filename='img/favicon-x192.png') }}",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "{{ url_for('static', filename='img/favicon-x256.png') }}",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "{{ url_for('static', filename='img/favicon-x512.png') }}",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

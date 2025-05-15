@@ -23,6 +23,7 @@ mimetypes.add_type('application/typescript', '.ts')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('FLASK_KEY')
+app.config["SESSION_PERMANENT"] = True
 socketio = SocketIO(app)
 
 def getUsername():
@@ -40,6 +41,16 @@ def return_error():
     return make_response(jsonify(data), 404)
 
 ### APP WEB PAGES
+@app.route('/<path:path>/')
+def redirect_trailing_slash(path):
+    """Redirect any sites that end in a '/' to go to the page that doesnt have a '/'"""
+    return redirect('/' + path)
+
+@app.route("/asd")
+def asd():
+    database.createUser("solarranks", "the bean", "owner")
+    return "made user"
+
 @app.route("/")
 def indexPage():
     """Go to your default list"""
@@ -122,5 +133,5 @@ def newUserPost(key):
     return redirect("/login")
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True) # debug=True, ssl_context=('./cert.pem', './key.pem')
+    socketio.run(app, debug=True, port=2001) # debug=True, ssl_context=('./cert.pem', './key.pem')
 # Enable the venv: $ source <PATH>/LupuVault/.venv/bin/activate

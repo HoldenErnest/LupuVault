@@ -1,14 +1,18 @@
 // Holden Ernest - 5/14/2025
 // Generic methods for an overall site vibe
 
-function copyText(copyElem:HTMLElement) {
-    var value = copyElem.dataset.value || copyElem.textContent;
+Array.from(document.getElementsByClassName('copyable')).forEach(element => {
+    (element as HTMLElement).addEventListener("click", copyText);
+});
+
+function copyText(event: Event) {
+    const target = event.currentTarget as HTMLElement;
+    const textToCopy = target.textContent; // Or .textContent, or a data attribute
+    navigator.clipboard.writeText(textToCopy!)
     
-    console.log("Copied: " + value);
-    navigator.clipboard.writeText(value!);
-    copyElem.style.backgroundColor = "#111"
-    copyElem.style.color = "#333"
-    copyElem.style.cursor = "default"
+    target.style.backgroundColor = "#111";
+    target.style.color = "#333";
+    target.style.cursor = "default";
 }
 
 function displayNotification(type:string, message:string) { // display a notification of a certain type.

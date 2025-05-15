@@ -1,13 +1,16 @@
 "use strict";
 // Holden Ernest - 5/14/2025
 // Generic methods for an overall site vibe
-function copyText(copyElem) {
-    var value = copyElem.dataset.value || copyElem.textContent;
-    console.log("Copied: " + value);
-    navigator.clipboard.writeText(value);
-    copyElem.style.backgroundColor = "#111";
-    copyElem.style.color = "#333";
-    copyElem.style.cursor = "default";
+Array.from(document.getElementsByClassName('copyable')).forEach(element => {
+    element.addEventListener("click", copyText);
+});
+function copyText(event) {
+    const target = event.currentTarget;
+    const textToCopy = target.textContent; // Or .textContent, or a data attribute
+    navigator.clipboard.writeText(textToCopy);
+    target.style.backgroundColor = "#111";
+    target.style.color = "#333";
+    target.style.cursor = "default";
 }
 function displayNotification(type, message) {
     // type can be either 'success' 'warning' 'error'

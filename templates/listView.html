@@ -7,6 +7,16 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; img-src *">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/listView.css') }}">
     <title>LupuVault</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-x32.png') }}">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='config/manifest.json') }}" />
+    <!-- Apple Application info -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LupuVault">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicon-x192.png') }}">
+
   </head>
   <body>
     <div id="escape-focus" tabindex="-1"></div>
@@ -79,6 +89,6 @@
     <input class="checkbox" type="checkbox" id="save-check">
     <label id="save-btn" for="save-check">save</label>
 
-    <script type="module" src="{{ url_for('static', filename='js/listItems.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/list.js') }}"></script>
   </body>
 </html>

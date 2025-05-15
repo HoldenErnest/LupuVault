@@ -2,21 +2,22 @@
 <html>
 <head>
     <title>Add User - LupuVault</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-x32.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/generic.css') }}">
-    <script type="module" src="{{ url_for('static', filename='js/generic.js') }}"></script>
+    
 </head>
 <body>
     <h2>Generated URLs</h2>
     <p>Click to copy the generated URL. The link will be active for 1 Hour. Send it to your friends</p>
 
     <h3>Normal User URL:</h3>
-    <div id="urlField" class="copyable" onclick="copyText(this)" name="{{ normalkeyurl }}">{{ normalkeyurl }}</div>
+    <div id="urlField" class="copyable">{{ normalkeyurl }}</div>
     {% if adminkeyurl != "" %}
     </br>
     <h3>Admin User URL: (Single Use)</h3>
-    <div id="urlFieldAdmin" class="copyable" onclick="copyText(this)" name="{{ adminkeyurl }}">{{ adminkeyurl }}</div>
+    <div id="urlFieldAdmin" class="copyable">{{ adminkeyurl }}</div>
     {% endif %}
 
-    
+    <script type="module" src="{{ url_for('static', filename='js/generic.js') }}"></script>
 </body>
 </html>
