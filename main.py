@@ -64,15 +64,18 @@ def loginPageGet():
 @app.route("/login", methods=['post'])
 def loginPagePost():
     """Get the login info back from the user"""
-    username = request.form['username']
-    password = request.form['password']
+    username = request.form.get('username', False)
+    password = request.form.get('password', False)
+
+    if (not username or not password):
+        return redirect("/login")
 
     if (database.hasUser(username, password)):
         session["username"] = username
         session["password"] = password
         return redirect("/")
 
-    return loginPageGet()#redirect("/login")
+    return redirect("/login") #TODO: make these login redirects also POST a notification error
 
 @app.route("/newuser")
 def generateURL():

@@ -14,3 +14,9 @@ configure apache wsgi:
     - as an admin you can generate a url with a onetime use key
     - the key is stored with additional info like new userlevel and expire time
     - when the url is used, remove the onetime key from the system.
+
+5/14/2025
+ - using porkbun: you can configure a dns record for any domain(including subdomains) to point to your server
+ - new domain:
+ - Edit the Apache Virtual Sites you want to use the domains as their ServerName
+ - `$ sudo certbot --apache -d newdomain.com --force-renewal` - to add a new cert for this domain
