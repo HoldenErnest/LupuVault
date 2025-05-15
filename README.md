@@ -1,3 +1,6 @@
+![LupuVault](static/img/favicon-x256.png)
+
+
 # LupuVault
 A redefined system for LupuVault. The Web App that holds list information defined by users. The app has an intuitive UI with extensive searching and sorting capability.
 
@@ -9,7 +12,7 @@ Login to [LupuVault](https://lupu.app/login) to view as a guest! Or Message an a
  - password: `guest`
 
 
-## Setup
+## :tools: Setup
 
 - Clone Repository
 - Ensure Python and pip are installed
@@ -20,12 +23,12 @@ Login to [LupuVault](https://lupu.app/login) to view as a guest! Or Message an a
     - Ensure the directory ('LupuVault') and its subdirectory 'static' are granted access
     - Setup HTTPS by configuring the cert and key
 
-## Run
+## :red_car: Run
 
 As Dev:
 
- - `$ python3 main.py`
+ - `$ ./devRun`
 
 As Apache WSGI:
 
- - `$ sudo service apache2 restart`
+ - `$ sudo ./apacheRefresh`
