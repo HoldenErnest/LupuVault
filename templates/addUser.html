@@ -24,12 +24,12 @@
         <input type="text" id="username" class="genericInput" name="username" maxlength="30" placeholder="username.." required><br><br>
         <label for="password">Password:</label>
         <input type="password" id="password" class="genericInput" name="password" maxlength="30" placeholder="password.." required><br><br>
-        <button id="login" class="genericButton">Login</button>
+        <button id="login" class="genericButton">Create User</button>
       </form>
       <div class="tips-text">You've been given an opportunity for a new user, dont blunder it</div>
 
 	<script src="{{ url_for('static', filename='js/generic.js') }}"></script>
-	{% if notification is defined%}
+	{% if notification is defined and notification != "" %}
 	<script type="text/javascript">
 		displayNotification("{{ notification.status }}", "{{notification.message}}")
 	</script>

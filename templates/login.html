@@ -2,36 +2,36 @@
 
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Login - LupuVault</title>
+<head>
+<title>Login - LupuVault</title>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/generic.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-x32.png') }}">
-  </head>
-  <body>
+</head>
+<body>
     <div class="notification placeholder" id="placeholder-noti" value=""></div>
 
     <div id="notification-area"></div>
     <div id="all-center">
-      <div id="title">Login</div>
-      <form method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" class="genericInput" name="username" maxlength="30" placeholder="username.." required><br><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" class="genericInput" name="password" maxlength="30" placeholder="password.." required><br><br>
-        <button id="login" class="genericButton">Login</button>
-      </form>
-      <div class="tips-text">If you do not have an account and would like one, message an admin</div>
+        <div id="title">Login</div>
+        <form method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" class="genericInput" name="username" maxlength="30" placeholder="username.." required><br><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" class="genericInput" name="password" maxlength="30" placeholder="password.." required><br><br>
+            <button id="login" class="genericButton">Login</button>
+        </form>
+        <div class="tips-text">If you do not have an account and would like one, message an admin</div>
     </div>
 
     <script src="{{ url_for('static', filename='js/generic.js') }}"></script>
-	{% if notification is defined%}
-	<script type="text/javascript">
-		displayNotification("{{ notification.status }}", "{{notification.message}}")
-	</script>
-	{% endif %}
-  </body>
+    {% if notification is defined and notification != "" %}
+    <script type="text/javascript">
+        displayNotification("{{ notification.status }}", "{{notification.message}}")
+    </script>
+    {% endif %}
+</body>
 </html>

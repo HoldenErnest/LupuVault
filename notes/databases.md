@@ -22,6 +22,7 @@ UserLevels:
 each users entry must be unique if its in the same 
 ```
 CREATE TABLE listData (
+itemUID int NOT NULL,
 owner varchar(32) NOT NULL,
 listname varchar(64) NOT NULL,
 title varchar(64) NOT NULL,
@@ -29,9 +30,11 @@ notes varchar(1000),
 rating tinyint DEFAULT 0,
 date datetime DEFAULT (CURRENT_DATE),
 imageURL varchar(350),
-PRIMARY KEY (owner, listname, title)
+PRIMARY KEY (itemUID, owner, listname)
 );
 ```
+REMOVED: `PRIMARY KEY (owner, listname, title)`
+
 `Insert into listData (owner, listname, title) values ('jim','aList','listItem1');` - Create a new list item in /list/jim/aList
 
 ### guests:

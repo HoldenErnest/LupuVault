@@ -50,7 +50,12 @@ class PageExtras:
         return self.notification
     
     def getFunMsg(self):
+        if (self.funMsg == ""):
+            return self.generateFunMsg()
         return self.funMsg
+    
+    def generateFunMsg(self):
+        return ""
     
 ###
 ### END Types

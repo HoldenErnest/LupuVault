@@ -23,3 +23,10 @@ configure apache wsgi:
 
  5/15/2025
  - made a website builder, which allows notifications to be passed in and jinja in the HTML will take care of it
+
+ 5/16/2025
+ - restructuring the list interaction.
+ - SOCKETIO sockets are encrypted when using https so thats good to use!
+ - SocketIO sends small keepalive packets even when its not in use (this would be the cost of using this instead of ajax). Overall it looks fine
+ - `pingTimeout`: 20000ms (20 sec)
+ - `pingInterval`: 25000ms (25 sec)
