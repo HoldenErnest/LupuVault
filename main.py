@@ -27,6 +27,35 @@ app.config['SECRET_KEY'] = os.getenv('FLASK_KEY')
 app.config["SESSION_PERMANENT"] = True
 socketio = SocketIO(app)
 
+###
+### Types
+###
+class Notification:
+    def __init__(self, stat = "", msg = ""):
+        self.status = stat
+        self.message = msg
+    
+    def getMsg(self):
+        return self.message
+    
+    def getStat(self):
+        return self.status
+    
+class PageExtras:
+    def __init__(self, noti:Notification = Notification(), funMsg: str = ""):
+        self.notification = noti
+        self.funMsg = funMsg
+    
+    def getNoti(self):
+        return self.notification
+    
+    def getFunMsg(self):
+        return self.funMsg
+    
+###
+### END Types
+###
+
 def getUsername():
     return session["username"]
 
@@ -42,7 +71,18 @@ def signedIn():
 def createNotification(status, message):
     apis.saveNotification(getUsername(), status, message)
 
+def createDetailedPage(template, pageExtra:PageExtras):
+    """Use the template more thourougly by passing in extra parameters like 'error message'"""
+
+    notification = {
+        'message': pageExtra.notification.getMsg(),
+        'status': pageExtra.notification.getStat()
+    }
+    return render_template(template, notification=notification, funMsg=pageExtra.getFunMsg())
+
+###
 ### APP WEB PAGES
+###
 @app.route('/<path:path>/')
 def redirect_trailing_slash(path):
     """Redirect any sites that end in a '/' to go to the page that doesnt have a '/'"""
@@ -91,7 +131,7 @@ def loginPagePost():
         session["password"] = password
         return redirect("/")
 
-    return redirect("/login") #! warning noti
+    return createDetailedPage(template="login.html", pageExtra=PageExtras(noti=Notification(stat="warning", msg="Incorrect username or password")))
 
 @app.route("/newuser")
 def generateURL():
@@ -127,7 +167,7 @@ def newUserPost(key):
 
     madeUser = database.hasUsername(username) #TODO: do some kinda ajax instead
     if (madeUser):
-        return redirect(request.url)
+        return createDetailedPage(template="addUser.html", pageExtra=PageExtras(noti=Notification(stat="warning", msg="Username already taken")))
 
     keyInfo = secretkeys.useOTUserKey(key) # only remove the key when the user is made
     if (not keyInfo):
@@ -138,5 +178,4 @@ def newUserPost(key):
     return redirect("/login")
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, port=2001) # debug=True, ssl_context=('./cert.pem', './key.pem')
-# Enable the venv: $ source <PATH>/LupuVault/.venv/bin/activate
+    socketio.run(app, debug=True, port=2001)

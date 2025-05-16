@@ -6,7 +6,7 @@
 <head>
     <title>New User - LupuVault</title>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-x32.png') }}">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/generic.css') }}">
@@ -27,7 +27,15 @@
         <button id="login" class="genericButton">Login</button>
       </form>
       <div class="tips-text">You've been given an opportunity for a new user, dont blunder it</div>
+
+	<script src="{{ url_for('static', filename='js/generic.js') }}"></script>
+	{% if notification is defined%}
+	<script type="text/javascript">
+		displayNotification("{{ notification.status }}", "{{notification.message}}")
+	</script>
+	{% endif %}
     </div>
+    
 </body>
 
 </html>

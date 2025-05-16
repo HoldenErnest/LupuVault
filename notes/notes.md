@@ -20,3 +20,6 @@ configure apache wsgi:
  - new domain:
  - Edit the Apache Virtual Sites you want to use the domains as their ServerName
  - `$ sudo certbot --apache -d newdomain.com --force-renewal` - to add a new cert for this domain
+
+ 5/15/2025
+ - made a website builder, which allows notifications to be passed in and jinja in the HTML will take care of it

@@ -19,6 +19,14 @@ Login to [LupuVault](https://lupu.app/login) to view as a guest! Or Message an a
 - Clone Repository
 - Ensure Python and pip are installed
 - Create the Virtual Environment: `$ python3 -m venv .venv ` & `$ source .venv/bin/activate`
+- Create a `.env` and initialize the following variables for your needs:
+    - `FLASK_KEY=`
+    - `IMG_API_KEY=`
+    - `CSE_ID=`
+    - `SERVER_HOST=`
+    - `DB_USER=`
+    - `DB_PASS=`
+    - `DB_NAME=`
 - To serve via Apache:
     - Create and enable a new site
     - Include an `WSGIScriptAlias` for the app.wsgi

@@ -3,11 +3,11 @@
 - **SAVE**: Server can create notifications whenever
 - **GET**: AJAX to pull from the API `/api/notifications/<user>`
 
-### warning messages: #! todo
-
-Context: on failed login, or successful list save
+### warning messages:
 
 - **SAVE/GET**: Send them directly to the templates
+- `notification`
+- `funMsg`
 
 ### lists: #! todo
 
