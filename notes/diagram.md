@@ -25,4 +25,12 @@ OR use sockets to change things on demand
 - !!! make sure the post is secure (not as much of an issue since its only 1 item being changed)
 - push to all SOCKETS that have access to your list to update their lists accordingly
 - **GET**: on `/` use jinja to get your last accessed list from the database. If any edits are made by other users it will be passed via sockets.
-- !!! make sure to change the socket groupping if the user changes lists. (this will be interesting)
+- !!! make sure to change the socket groupping if the user changes lists. (this is handled by '/')
+- socketio will leave the last room it was in on refresh
+
+Room Code: 
+```
+list = session["lastList]
+if (user has access to list)
+session["groupCode"] = list.owner + list.listname
+```

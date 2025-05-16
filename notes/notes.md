@@ -30,3 +30,5 @@ configure apache wsgi:
  - SocketIO sends small keepalive packets even when its not in use (this would be the cost of using this instead of ajax). Overall it looks fine
  - `pingTimeout`: 20000ms (20 sec)
  - `pingInterval`: 25000ms (25 sec)
+ - SocketIO allows you to send to a single user with `emit('my event', my_data, to=user_sid)` (not useful in this case)
+ - "rooms" can be created which users can join given the room code.
