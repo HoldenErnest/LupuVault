@@ -70,20 +70,14 @@ def getCurList():
     """Returns current list, if there is none, assign one"""
     if ("curList" in session):
         return session["curList"]
-    session["curList"] = database.getLastOpenedList(getUsername(), getPassword())
-    #! TODO ^^
+    session["curList"] = database.getFirstList(getUsername()) #inherently you have access to this list
+    return session["curList"]
 
 def getUsername():
     return session["username"]
 
 def getPassword():
     return session["password"]
-
-def userCanAccessCurrentList():
-    if ("curList" in session):
-        curList = session["curList"]
-        return database.userHasAccess(getUsername(), curList["owner"], curList["listName"])
-    return False
 
 def signedIn():
     """Check to make sure the user is signed in on the session variable"""

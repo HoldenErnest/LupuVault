@@ -45,11 +45,14 @@ listname varchar(64) NOT NULL,
 title varchar(64) NOT NULL,
 notes varchar(1000),
 rating tinyint DEFAULT 0,
+tags varchar(100),
 date datetime DEFAULT (CURRENT_DATE),
 imageURL varchar(350),
 PRIMARY KEY (itemID, owner, listname)
 );
 ```
+
+tags are words seperated by spaces(" ")
 
 `Insert into listData (owner, listname, title) values ('jim','aList','listItem1');` - Create a new list item in /list/jim/aList
 

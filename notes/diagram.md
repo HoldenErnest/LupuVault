@@ -25,6 +25,7 @@ OR use sockets to change things on demand
 - !!! make sure the post is secure (not as much of an issue since its only 1 item being changed)
 - push to all SOCKETS that have access to your list to update their lists accordingly
 - **GET**: on `/` use jinja to get your last accessed list from the database. If any edits are made by other users it will be passed via sockets.
+- If you select a different list, change the last selected and refresh the page. (this will make things like sockets more reliable)
 - !!! make sure to change the socket groupping if the user changes lists. (this is handled by '/')
 - socketio will leave the last room it was in on refresh
 

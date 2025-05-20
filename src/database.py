@@ -154,11 +154,11 @@ def updateListItem(connectedUser, listItem):
         return False
 
     if (listItem["itemID"] < 0):
-        sql = "INSERT INTO listData (owner, listname, title, notes, rating, date, imageURL) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        vals = (listOwner, listname, listItem["title"], listItem["notes"], listItem["rating"], listItem["date"], listItem["imageURL"])
+        sql = "INSERT INTO listData (owner, listname, title, notes, rating, tags, date, imageURL) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        vals = (listOwner, listname, listItem["title"], listItem["notes"], listItem["rating"], listItem["tags"], listItem["date"], listItem["imageURL"])
     else:
-        sql = "REPLACE INTO listData (itemID, owner, listname, title, notes, rating, date, imageURL) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        vals = (listItem["itemID"], listOwner, listname, listItem["title"], listItem["notes"], listItem["rating"], listItem["date"], listItem["imageURL"])
+        sql = "REPLACE INTO listData (itemID, owner, listname, title, notes, rating, tags, date, imageURL) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        vals = (listItem["itemID"], listOwner, listname, listItem["title"], listItem["notes"], listItem["rating"], listItem["tags"], listItem["date"], listItem["imageURL"])
     
     return _tryInsert(sql, vals)
 
