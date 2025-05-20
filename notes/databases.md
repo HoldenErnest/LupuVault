@@ -39,7 +39,7 @@ Lists will be shown in the following order:
 each users entry must be unique if its in the same 
 ```
 CREATE TABLE listData (
-itemUID int NOT NULL,
+itemID int UNSIGNED NOT NULL AUTO_INCREMENT,
 owner varchar(32) NOT NULL,
 listname varchar(64) NOT NULL,
 title varchar(64) NOT NULL,
@@ -47,7 +47,7 @@ notes varchar(1000),
 rating tinyint DEFAULT 0,
 date datetime DEFAULT (CURRENT_DATE),
 imageURL varchar(350),
-PRIMARY KEY (itemUID, owner, listname)
+PRIMARY KEY (itemID, owner, listname)
 );
 ```
 

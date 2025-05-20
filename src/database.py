@@ -114,7 +114,6 @@ def setGuestPermsForList(connectedUser, newGuest, listOwner, listname, perms):
     
     sql = "INSERT INTO guests (owner, listname, guest, perms) VALUES (%s, %s, %s, %s)"
     vals = (listOwner, listname, newGuest, perms)
-    print("adding user", newGuest, "to guest list")
     return _tryInsert(sql, vals)
 
 def removeGuestForList(connectedUser, newGuest, listOwner, listname):
@@ -122,12 +121,11 @@ def removeGuestForList(connectedUser, newGuest, listOwner, listname):
         return False
     sql = "DELETE FROM guests where owner = %s AND listname = %s AND guest = %s"
     vals = (listOwner, listname, newGuest)
-    print("removing user", newGuest, "from guest list")
     return _tryInsert(sql, vals)
 
 def getFirstList(user):
     """Get the last opened list"""
-    #!
+    return getListsInOrder(user)[0]
 
 def getListsInOrder(user):
     """Returns the lists in an order that they will be displayed for the user"""
@@ -148,13 +146,32 @@ def getListsInOrder(user):
     else:
         return () #! TEST
 
-def updateListItem(connectedUser, listOwner, listname, listItem):
+def updateListItem(connectedUser, listItem):
     """Update a list item, if it doesnt have an item with that uid, make one"""
+    listOwner = listItem["owner"]
+    listname = listItem["listname"]
     if (not userHasAccess(connectedUser, listOwner, listname, True)):
-        return listHandler.createError(403, "Forbidden: '" + connectedUser + "' does not have write access to this list")
+        return False
 
-    #! update this lists lastWrite on allLists
-    #! update or insert into listData table
+    if (listItem["itemID"] < 0):
+        sql = "INSERT INTO listData (owner, listname, title, notes, rating, date, imageURL) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        vals = (listOwner, listname, listItem["title"], listItem["notes"], listItem["rating"], listItem["date"], listItem["imageURL"])
+    else:
+        sql = "REPLACE INTO listData (itemID, owner, listname, title, notes, rating, date, imageURL) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        vals = (listItem["itemID"], listOwner, listname, listItem["title"], listItem["notes"], listItem["rating"], listItem["date"], listItem["imageURL"])
+    
+    return _tryInsert(sql, vals)
+
+def getListItemDict(connectedUser, listOwner, listname, itemID):
+    """Returns a JSON object of the requested list"""
+    if (not userHasAccess(connectedUser, listOwner, listname, False)):
+        return listHandler.createError(403, "Forbidden: '" + connectedUser + "' does not have access to this list")
+
+    sql = "SELECT * FROM listData WHERE owner = %s AND listname = %s AND itemID = %s"
+    vals = (listOwner,listname, itemID)
+    res = _trySelect(sql, vals)
+    if (res):
+        return listHandler.listSQLToDict(dbCursor, res)
 
 def getListDict(connectedUser, listOwner, listname):
     """Returns a JSON object of the requested list"""
@@ -172,14 +189,12 @@ def createUser(username, password):
     _hashPassword = newHashText(password)
     sql = "INSERT INTO users (username, password) VALUES (%s, %s)"
     vals = (username, _hashPassword)
-    print("adding user ", username)
     return _tryInsert(sql, vals)
 
 def removeUser(username):
     """Remove a user from the database"""
     sql = "DELETE FROM users WHERE username = %s"
     vals = (username,)
-    print("removing user ", username)
     return _tryInsert(sql, vals)
 
 def createUser(username, password, userlevel):
@@ -187,14 +202,12 @@ def createUser(username, password, userlevel):
     _hashPassword = newHashText(password)
     sql = "INSERT INTO users (username, password, userlevel) VALUES (%s, %s, %s)"
     vals = (username, _hashPassword, userlevel)
-    print("adding user ", username)
     return _tryInsert(sql, vals)
 
 def createList(username, listname):
     """Create a new list"""
     sql = "INSERT INTO allLists (owner, listname) VALUES (%s, %s)"
     vals = (username, listname)
-    print("creating list ", listname)
     return _tryInsert(sql, vals)
 
 def removeList(connectedUser, owner, listname):
@@ -202,13 +215,12 @@ def removeList(connectedUser, owner, listname):
     if (owner != connectedUser):
         return False
     
-    sql = """DELETE allLists
+    sql = """DELETE allLists, listData
  FROM allLists
  LEFT JOIN listData
  ON allLists.listname = listData.listname AND allLists.owner = listData.owner
  WHERE allLists.owner = %s AND allLists.listname = %s;"""
     vals = (owner, listname)
-    print("removing list ", listname)
     return _tryInsert(sql, vals)
 
 def _generate_salt():

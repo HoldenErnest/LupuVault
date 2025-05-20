@@ -6,6 +6,8 @@ import sys
 sys.path.insert(0, '/home/lupu/LupuVault')
 from main import database
 
+import datetime 
+
 
 #!
 #!
@@ -45,6 +47,20 @@ class TestApp(unittest.TestCase):
 
     def test_getListsInOrder(self):
         self.assertEqual(database.getListsInOrder('testUser@normal'), [('testList', 'testUser@normal'), ('testList1', 'testUser@normal'), ('testList2', 'testUser2@normal'), ('testList3', 'testUser2@normal')])
+        self.assertEqual(database.getFirstList('testUser@normal'), ('testList', 'testUser@normal'))
+
+    def test_UpdateListItem(self):
+        self.assertTrue(database.updateListItem('testUser@normal', {"itemID": 1, "owner": "testUser@normal", "listname": "testList", "title": "someTitle", "notes": "", "rating": 6, "date":"2025-04-15 00:00:00", "imageURL":""}))
+        self.assertTrue(database.updateListItem('testUser@normal', {"itemID": 2, "owner": "testUser@normal", "listname": "testList", "title": "someTitle2", "notes": "asd", "rating": 1, "date":"2025-04-11 00:00:00", "imageURL":""}))
+
+        newItem = database.getListItemDict('testUser@normal', 'testUser@normal', 'testList', 1)
+        newItem["title"] = "newTitle"
+        newItem["notes"] = "this is a new notes"
+        self.assertTrue(database.updateListItem('testUser@normal', newItem))
+
+        self.assertEqual(database.getListDict('testUser@normal', 'testUser@normal', 'testList'), [{'itemID': 1, 'owner': 'testUser@normal', 'listname': 'testList', 'title': 'newTitle', 'notes': 'this is a new notes', 'rating': 6, 'date': datetime.datetime(2025, 4, 15, 0, 0), 'imageURL': ''}, {'itemID': 2, 'owner': 'testUser@normal', 'listname': 'testList', 'title': 'someTitle2', 'notes': 'asd', 'rating': 1, 'date': datetime.datetime(2025, 4, 11, 0, 0), 'imageURL': ''}])
+
+    
 
 if __name__ == '__main__':
     unittest.main()

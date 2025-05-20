@@ -19,6 +19,13 @@ def listSQLToDict(cursor, sqlData):
     """SQL list info to JSON object. [Reference Page](https://stackoverflow.com/questions/43796423/python-converting-mysql-query-result-to-json)"""
     row_headers=[x[0] for x in cursor.description]
     json_data=[]
+
+    if (len(sqlData) == 0):
+        return []
+
+    if (len(sqlData) == 1):
+        return dict(zip(row_headers,sqlData[0]))
+    
     for result in sqlData:
         json_data.append(dict(zip(row_headers,result)))
     return json_data
