@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo Python:
+wc -l *.py ./src/*.py ./tests/*.py | tail -1
+
+echo TypeScript:
+wc -l ./static/ts/*.ts | tail -1
+
+echo HTML:
+wc -l ./templates/*.html | tail -1
+
+echo CSS:
+wc -l ./static/css/*.css | tail -1

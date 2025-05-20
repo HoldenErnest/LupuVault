@@ -89,7 +89,7 @@ def getUserLevel(username):
         return _ul
     return False
 
-def userHasAccess(connectedUser, listOwner, listname, write):
+def userHasAccess(connectedUser, listOwner, listname, write = False):
     if (connectedUser == listOwner):
         return True
     
@@ -105,9 +105,56 @@ def userHasAccess(connectedUser, listOwner, listname, write):
         return True
     return False
 
-def addGuestToList(connectedUser, newGuest, listOwner, listname):
-    if (not connectedUser == listOwner):
-        return listHandler.createError(403, "Forbidden: '" + connectedUser + "' is not the owner of this list")
+def setGuestPermsForList(connectedUser, newGuest, listOwner, listname, perms):
+    if (connectedUser != listOwner):
+        return False
+    
+    if (perms == "none"):
+        return removeGuestForList(connectedUser, newGuest, listOwner, listname)
+    
+    sql = "INSERT INTO guests (owner, listname, guest, perms) VALUES (%s, %s, %s, %s)"
+    vals = (listOwner, listname, newGuest, perms)
+    print("adding user", newGuest, "to guest list")
+    return _tryInsert(sql, vals)
+
+def removeGuestForList(connectedUser, newGuest, listOwner, listname):
+    if (connectedUser != listOwner):
+        return False
+    sql = "DELETE FROM guests where owner = %s AND listname = %s AND guest = %s"
+    vals = (listOwner, listname, newGuest)
+    print("removing user", newGuest, "from guest list")
+    return _tryInsert(sql, vals)
+
+def getFirstList(user):
+    """Get the last opened list"""
+    #!
+
+def getListsInOrder(user):
+    """Returns the lists in an order that they will be displayed for the user"""
+    # dec from recency. First all user owned lists, then all guest lists
+    sql = "SELECT listname, owner FROM allLists WHERE owner = %s order by lastwrite desc"
+    vals = (user,)
+
+    res = _trySelect(sql, vals)
+    if (res):
+        sql = "SELECT listname, owner FROM guests WHERE guest = %s order by listname asc"
+        vals = (user,)
+
+        res2 = _trySelect(sql, vals)
+        if (res2):
+            return res + res2
+        else:
+            return res
+    else:
+        return () #! TEST
+
+def updateListItem(connectedUser, listOwner, listname, listItem):
+    """Update a list item, if it doesnt have an item with that uid, make one"""
+    if (not userHasAccess(connectedUser, listOwner, listname, True)):
+        return listHandler.createError(403, "Forbidden: '" + connectedUser + "' does not have write access to this list")
+
+    #! update this lists lastWrite on allLists
+    #! update or insert into listData table
 
 def getListDict(connectedUser, listOwner, listname):
     """Returns a JSON object of the requested list"""
@@ -128,12 +175,40 @@ def createUser(username, password):
     print("adding user ", username)
     return _tryInsert(sql, vals)
 
+def removeUser(username):
+    """Remove a user from the database"""
+    sql = "DELETE FROM users WHERE username = %s"
+    vals = (username,)
+    print("removing user ", username)
+    return _tryInsert(sql, vals)
+
 def createUser(username, password, userlevel):
     """Create a new user, username MUST be unique. Password is salted and hashed"""
     _hashPassword = newHashText(password)
     sql = "INSERT INTO users (username, password, userlevel) VALUES (%s, %s, %s)"
     vals = (username, _hashPassword, userlevel)
     print("adding user ", username)
+    return _tryInsert(sql, vals)
+
+def createList(username, listname):
+    """Create a new list"""
+    sql = "INSERT INTO allLists (owner, listname) VALUES (%s, %s)"
+    vals = (username, listname)
+    print("creating list ", listname)
+    return _tryInsert(sql, vals)
+
+def removeList(connectedUser, owner, listname):
+    """Remove a list from the database, including all its lists items"""
+    if (owner != connectedUser):
+        return False
+    
+    sql = """DELETE allLists
+ FROM allLists
+ LEFT JOIN listData
+ ON allLists.listname = listData.listname AND allLists.owner = listData.owner
+ WHERE allLists.owner = %s AND allLists.listname = %s;"""
+    vals = (owner, listname)
+    print("removing list ", listname)
     return _tryInsert(sql, vals)
 
 def _generate_salt():

@@ -17,6 +17,23 @@ UserLevels:
  - 1: admin, can give out links for new normal users
  - 0: owner, can give out admin links and manager user settings
 
+### allLists:
+
+```
+CREATE TABLE allLists (
+owner varchar(32) NOT NULL,
+listname varchar(64) NOT NULL,
+lastwrite TIMESTAMP Default (CURRENT_TIMESTAMP),
+PRIMARY KEY (owner, listname)
+);
+```
+
+any time you save to the list, update the `lastwrite` time.
+
+Lists will be shown in the following order:
+ - All owned lists. Recency dec
+ - All guest lists. Recency dec
+
 ### listData:
 
 each users entry must be unique if its in the same 
@@ -33,7 +50,6 @@ imageURL varchar(350),
 PRIMARY KEY (itemUID, owner, listname)
 );
 ```
-REMOVED: `PRIMARY KEY (owner, listname, title)`
 
 `Insert into listData (owner, listname, title) values ('jim','aList','listItem1');` - Create a new list item in /list/jim/aList
 
@@ -46,7 +62,7 @@ owner varchar(32) NOT NULL,
 listname varchar(64) NOT NULL,
 guest varchar(32) NOT NULL,
 perms ENUM('write', 'read') DEFAULT 'read',
-PRIMARY KEY (owner, listname)
+PRIMARY KEY (owner, listname, guest)
 );
 ```
 `Insert into guests (owner, listname, guest) values ('jim','aList','dean');` - Give dean read permissions on /list/jim/aList

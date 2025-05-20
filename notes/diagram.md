@@ -30,7 +30,16 @@ OR use sockets to change things on demand
 
 Room Code: 
 ```
-list = session["lastList]
+list = session["curList]
 if (user has access to list)
 session["groupCode"] = list.owner + list.listname
+```
+
+```
+curList = {
+    owner: str,
+    listname: str,
+    ...?
+}
+
 ```

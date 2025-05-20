@@ -8,7 +8,7 @@ import os
 import sys
 
 # src/ MODULES
-sys.path.insert(0, '/home/lupu/LupuVault/src')
+sys.path.insert(0, '/home/lupu/LupuVault/src') # this is needed for the dotenv as well.
 import database
 import secretkeys
 import apis
@@ -26,6 +26,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('FLASK_KEY')
 app.config["SESSION_PERMANENT"] = True
 socketio = SocketIO(app)
+
+import socketEvents # make sure the script is loaded to recieve the events
+
+
+
 
 ###
 ### Types
@@ -61,11 +66,24 @@ class PageExtras:
 ### END Types
 ###
 
+def getCurList():
+    """Returns current list, if there is none, assign one"""
+    if ("curList" in session):
+        return session["curList"]
+    session["curList"] = database.getLastOpenedList(getUsername(), getPassword())
+    #! TODO ^^
+
 def getUsername():
     return session["username"]
 
 def getPassword():
     return session["password"]
+
+def userCanAccessCurrentList():
+    if ("curList" in session):
+        curList = session["curList"]
+        return database.userHasAccess(getUsername(), curList["owner"], curList["listName"])
+    return False
 
 def signedIn():
     """Check to make sure the user is signed in on the session variable"""
@@ -85,9 +103,9 @@ def createDetailedPage(template, pageExtra:PageExtras):
     }
     return render_template(template, notification=notification, funMsg=pageExtra.getFunMsg())
 
-###
-### APP WEB PAGES
-###
+
+
+### Main
 @app.route('/<path:path>/')
 def redirect_trailing_slash(path):
     """Redirect any sites that end in a '/' to go to the page that doesnt have a '/'"""
@@ -98,7 +116,10 @@ def indexPage():
     """Go to your default list"""
     if (not signedIn()):
         return redirect("/login") #! warning noti
+    
     return render_template("listView.html")
+
+### END Main
 
 ### APIS
 @app.route("/api/notifications/<user>")
@@ -182,5 +203,7 @@ def newUserPost(key):
     
     return redirect("/login")
 
+
+
 if __name__ == '__main__':
-    socketio.run(app, debug=True, port=2001)
+    socketio.run(app, debug=True)
