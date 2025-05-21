@@ -27,6 +27,7 @@ Login to [LupuVault](https://lupu.app/login) to view as a guest! Or Message an a
     - `DB_USER=`
     - `DB_PASS=`
     - `DB_NAME=`
+- Create the MySQL database (or refactor for other). Follow the [Database Diagram](./notes/databases.md) for information on the tables
 - To serve via Apache:
     - Create and enable a new site
     - Include an `WSGIScriptAlias` for the app.wsgi
