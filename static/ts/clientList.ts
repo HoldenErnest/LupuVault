@@ -3,9 +3,9 @@
 
 import * as socket from './socket.js';
 
-
-var currentListName:string = ""
-var currentListOwner:string = ""
+const whoAmI:string = (document.getElementById("initWhoAmI") as HTMLInputElement).value
+var currentListName:string = (document.getElementById("initListList") as HTMLInputElement).value
+var currentListOwner:string = (document.getElementById("initListUser") as HTMLInputElement).value
 
 var changes:{[keys: string]: listItem} = {}
 
@@ -25,19 +25,6 @@ export interface listItemExport extends listItem {
     "listname": string,
 }
 
-initList()
-/**
- * Assign initial values for the first list on load
- */
-function initList() {
-    const initUser = (document.getElementById("initListUser") as HTMLInputElement).value
-    const initList = (document.getElementById("initListList") as HTMLInputElement).value
-    currentListName = initList;
-    currentListOwner = initUser;
-
-    console.log(currentListName + " by owner: " + currentListOwner);
-
-}
 
 
 /**
@@ -52,18 +39,25 @@ export function requestOpenList(url: string) {
     openList(owner, listname, listData);
 }
 export function removeList(params?: string) {
-    //TODO: delete list if you own this (including the guests)
+    //TODO: Not Urgent.. delete list if you own this (including the guests)
 }
 
 function openList(owner: string, listname: string, listData: listItem[]) {
     currentListName = listname;
     currentListOwner = owner;
-    //TODO: clear all changes
+    clearAllChanges();
     //TODO: refresh UI
 }
 
 export function requestAllAccessableLists() {
     //TODO: fetch from a newly created api that gets a json of all accessable lists.
+}
+
+/**
+ * Virtually creates a new list (any future saves will be sent as this new list)
+ */
+export function createNewList(listname: string) {
+    openList(whoAmI, listname, [])
 }
 
 
@@ -130,6 +124,9 @@ export function pushAllChanges() {
         pushListItem(changes[key])
         removeChange(key)
     }
+}
+function clearAllChanges() {
+    changes = {}
 }
 
 function toDateTime(date: Date) {

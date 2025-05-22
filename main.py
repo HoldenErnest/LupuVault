@@ -120,7 +120,7 @@ def indexPage():
     if (not signedIn()):
         return redirect("/login") #! warning noti
     currentList = getCurList()
-    return render_template("listView.html", curListUsr=currentList[1], curListList = currentList[0])
+    return render_template("listView.html", curListUsr=currentList[1], curListList = currentList[0], whoAmI=getUsername())
 
 ### END Main
 
@@ -130,7 +130,7 @@ def getNotifications(user):
     """Returns a json list of all notifications, to be grabbed from ajax calls"""
     apis.getNotifications(user)
 
-@app.route("/list/<owner>/<listname>")
+@app.route("/api/lists/<owner>/<listname>")
 def getList(owner, listname):
     """Strictly API route"""
     if (not signedIn()):
@@ -139,6 +139,10 @@ def getList(owner, listname):
     
     return jsonify(database.getListDict(currentUser, owner, listname))
 
+@app.route("/api/lists")
+def getAllLists():
+    currentUser = getUsername()
+    return jsonify(database.getListsInOrder(currentUser))
 ### END APIS
 
 @app.route("/login", methods=['get'])

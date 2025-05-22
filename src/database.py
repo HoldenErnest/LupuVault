@@ -130,24 +130,17 @@ def getFirstList(user):
         return lists[0]
     else:
         createList(user, "firstList")
-        return {"owner": user, "listname":"firstList"}
+        return (user,"firstList")
 
-def getListsInOrder(user):
+def getListsInOrder(owner):
     """Returns the lists in an order that they will be displayed for the user"""
     # dec from recency. First all user owned lists, then all guest lists
-    sql = "SELECT listname, owner FROM allLists WHERE owner = %s order by lastwrite desc"
-    vals = (user,)
-
+    sql = "SELECT listname, owner FROM allLists WHERE owner = %s UNION SELECT listname, owner FROM guests WHERE guest = %s order by listname asc;"
+    vals = (owner,owner)
     res = _trySelect(sql, vals)
+    
     if (res):
-        sql = "SELECT listname, owner FROM guests WHERE guest = %s order by listname asc"
-        vals = (user,)
-
-        res2 = _trySelect(sql, vals)
-        if (res2):
-            return res + res2
-        else:
-            return res
+        return res
     else:
         return () #! TEST
 
@@ -245,6 +238,8 @@ def getListDict(connectedUser, listOwner, listname):
     res = _trySelect(sql, vals)
     if (res):
         return listHandler.listSQLToDict(dbCursor, res)
+    else:
+        return []
 
 def createUser(username, password):
     """Create a new user, username MUST be unique. Password is salted and hashed"""

@@ -1,21 +1,11 @@
 // Holden Ernest - 5/20/2025
 // Holds information on what should be rendered on the main list page
 import * as socket from './socket.js';
-var currentListName = "";
-var currentListOwner = "";
+const whoAmI = document.getElementById("initWhoAmI").value;
+var currentListName = document.getElementById("initListList").value;
+var currentListOwner = document.getElementById("initListUser").value;
 var changes = {};
 var newItemID = -1; // give a temporary identification to each new item.
-initList();
-/**
- * Assign initial values for the first list on load
- */
-function initList() {
-    const initUser = document.getElementById("initListUser").value;
-    const initList = document.getElementById("initListList").value;
-    currentListName = initList;
-    currentListOwner = initUser;
-    console.log(currentListName + " by owner: " + currentListOwner);
-}
 /**
  * Trys open list
  * @param url a link to the json from the API
@@ -28,16 +18,22 @@ export function requestOpenList(url) {
     openList(owner, listname, listData);
 }
 export function removeList(params) {
-    //TODO: delete list if you own this (including the guests)
+    //TODO: Not Urgent.. delete list if you own this (including the guests)
 }
 function openList(owner, listname, listData) {
     currentListName = listname;
     currentListOwner = owner;
-    //TODO: clear all changes
+    clearAllChanges();
     //TODO: refresh UI
 }
 export function requestAllAccessableLists() {
     //TODO: fetch from a newly created api that gets a json of all accessable lists.
+}
+/**
+ * Virtually creates a new list (any future saves will be sent as this new list)
+ */
+export function createNewList(listname) {
+    openList(whoAmI, listname, []);
 }
 /**
  * Creates a new list item with an id so the user can edit it
@@ -88,13 +84,17 @@ export function pushListItem(item) {
  */
 export function pushAllChanges() {
     //! temp
-    addChange({ itemID: -1, title: "this is an old title (dont show)", notes: "some notes (untouched?)" });
+    addChange({ itemID: 2, title: "this is an old title (dont show)", notes: "some notes (untouched?)" });
     addChange({ itemID: -2, title: "This is a new item", rating: 3 });
-    addChange({ itemID: -1, title: "this is a better title" });
+    addChange({ itemID: 2, title: "this is a better title" });
+    //! temp
     for (var key in changes) {
         pushListItem(changes[key]);
         removeChange(key);
     }
+}
+function clearAllChanges() {
+    changes = {};
 }
 function toDateTime(date) {
     return date.toISOString().slice(0, 19).replace('T', ' ');
