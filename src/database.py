@@ -129,7 +129,8 @@ def getFirstList(user):
     if (len(lists) > 0):
         return lists[0]
     else:
-        return {"owner": user, "listname":"newList"}
+        createList(user, "firstList")
+        return {"owner": user, "listname":"firstList"}
 
 def getListsInOrder(user):
     """Returns the lists in an order that they will be displayed for the user"""
@@ -150,9 +151,11 @@ def getListsInOrder(user):
     else:
         return () #! TEST
 
-def ensureListExists(owner, listname):
+def ensureListExists(connectedUser, owner, listname):
     """Add a list if it doesnt exist so there will never be problems"""
-    createList(owner, listname)
+
+    if (connectedUser == owner):
+        createList(owner, listname)
     #TODO: make this not as computational on the database?
 
 def updateListItem(connectedUser, listItem):
@@ -162,22 +165,64 @@ def updateListItem(connectedUser, listItem):
     if (not userHasAccess(connectedUser, listOwner, listname, True)):
         return False
     
-    ensureListExists(listOwner, listname)
+    ensureListExists(connectedUser, listOwner, listname) # since we know userHasAccess, this list already exists if its from another user
 
-    #TODO: allow the object to not have some information.
-    # + ", ".join(update_fields)
-    # if user_object.name is not None:
-    #update_fields.append("name = %s")
-    #update_values.append(user_object.name)
-
-    if (listItem["itemID"] < 0):
-        sql = "INSERT INTO listData (owner, listname, title, notes, rating, tags, date, imageURL) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        vals = (listOwner, listname, listItem["title"], listItem["notes"], listItem["rating"], listItem["tags"], listItem["date"], listItem["imageURL"])
-    else:
-        sql = "REPLACE INTO listData (itemID, owner, listname, title, notes, rating, tags, date, imageURL) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        vals = (listItem["itemID"], listOwner, listname, listItem["title"], listItem["notes"], listItem["rating"], listItem["tags"], listItem["date"], listItem["imageURL"])
-    
+    (sql, vals) = getQueryFromListItem(listItem)
+    print(sql, " :: ", vals)
     return _tryInsert(sql, vals)
+
+def getQueryFromListItem(listItem):
+    """Returns a usable query for mysql which allows ommiting certain fields"""
+
+    update_fields = []
+    insert_fields = []
+    val_fields = []
+
+    update_fields.append("owner=%s")
+    insert_fields.append("owner")
+    val_fields.append(listItem["owner"])
+    update_fields.append("listname=%s")
+    insert_fields.append("listname")
+    val_fields.append(listItem["listname"])
+
+    if "title" in listItem:
+        update_fields.append("title=%s")
+        insert_fields.append("title")
+        val_fields.append(listItem["title"])
+    if "notes" in listItem:
+        update_fields.append("notes=%s")
+        insert_fields.append("notes")
+        val_fields.append(listItem["notes"])
+    if "rating" in listItem:
+        update_fields.append("rating=%s")
+        insert_fields.append("rating")
+        val_fields.append(listItem["rating"])
+    if "tags" in listItem:
+        update_fields.append("tags=%s")
+        insert_fields.append("tags")
+        val_fields.append(listItem["tags"])
+    if "date" in listItem:
+        update_fields.append("date=%s")
+        insert_fields.append("date")
+        val_fields.append(listItem["date"])
+    if "imageURL" in listItem:
+        update_fields.append("imageURL=%s")
+        insert_fields.append("imageURL")
+        val_fields.append(listItem["imageURL"])
+    
+
+    if ("itemID" not in listItem or listItem["itemID"] < 0):
+        sql = "INSERT INTO listData (" + ", ".join(insert_fields) + ") VALUES (" + ("%s,"*len(insert_fields))[:-1] + ");"
+        vals = tuple(val_fields)
+        return (sql, vals)
+    else:
+        sql = "UPDATE listData SET " + ", ".join(update_fields) + " WHERE itemID=%s AND owner=%s AND listname=%s"
+        val_fields.append(listItem["itemID"])
+        val_fields.append(listItem["owner"])
+        val_fields.append(listItem["listname"])
+        vals = tuple(val_fields)
+        return (sql, vals)
+    
 
 def getListItemDict(connectedUser, listOwner, listname, itemID):
     """Returns a JSON object of the requested list"""
@@ -238,7 +283,11 @@ def removeList(connectedUser, owner, listname):
  ON allLists.listname = listData.listname AND allLists.owner = listData.owner
  WHERE allLists.owner = %s AND allLists.listname = %s;"""
     vals = (owner, listname)
-    return _tryInsert(sql, vals)
+
+    if (_tryInsert(sql, vals)):
+        #TODO: remove all guests from this list
+        #dontUseList(owner, listname)
+        return
 
 def _generate_salt():
     """Generate a random Unique salt for newly created users"""

@@ -67,11 +67,20 @@ class PageExtras:
 ###
 
 def getCurList():
-    """Returns current list, if there is none, assign one"""
+    """Returns current list, if there is none, assign one
+    {owner, listname}
+    """
     if ("curList" in session):
         return session["curList"]
     session["curList"] = database.getFirstList(getUsername()) #inherently you have access to this list
     return session["curList"]
+
+def dontUseList(owner, listname):
+    """If you are currently using this list somewhere, STOP. most likely its being removed"""
+    curList = getCurList()
+
+    if (curList[0] == owner and curList[1] == listname):
+        del session["curList"]
 
 def getUsername():
     return session["username"]
@@ -110,8 +119,8 @@ def indexPage():
     """Go to your default list"""
     if (not signedIn()):
         return redirect("/login") #! warning noti
-    
-    return render_template("listView.html")
+    currentList = getCurList()
+    return render_template("listView.html", curListUsr=currentList[1], curListList = currentList[0])
 
 ### END Main
 

@@ -25,6 +25,20 @@ export interface listItemExport extends listItem {
     "listname": string,
 }
 
+initList()
+/**
+ * Assign initial values for the first list on load
+ */
+function initList() {
+    const initUser = (document.getElementById("initListUser") as HTMLInputElement).value
+    const initList = (document.getElementById("initListList") as HTMLInputElement).value
+    currentListName = initList;
+    currentListOwner = initUser;
+
+    console.log(currentListName + " by owner: " + currentListOwner);
+
+}
+
 
 /**
  * Trys open list
@@ -37,12 +51,19 @@ export function requestOpenList(url: string) {
     var listname: string = "";
     openList(owner, listname, listData);
 }
+export function removeList(params?: string) {
+    //TODO: delete list if you own this (including the guests)
+}
 
 function openList(owner: string, listname: string, listData: listItem[]) {
     currentListName = listname;
     currentListOwner = owner;
     //TODO: clear all changes
     //TODO: refresh UI
+}
+
+export function requestAllAccessableLists() {
+    //TODO: fetch from a newly created api that gets a json of all accessable lists.
 }
 
 
@@ -101,7 +122,10 @@ export function pushListItem(item: listItem) {
  */
 export function pushAllChanges() {
     //! temp
-    addChange({itemID: 1, title: "titlesthign"})
+    addChange({itemID: 2, title: "this is an old title (dont show)", notes: "some notes (untouched?)"})
+    addChange({itemID: -2, title: "This is a new item", rating: 3})
+    addChange({itemID: 2, title: "this is a better title"})
+    //! temp
     for (var key in changes) {
         pushListItem(changes[key])
         removeChange(key)

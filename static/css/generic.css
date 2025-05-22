@@ -19,6 +19,15 @@ body::-webkit-scrollbar {
 }
 /* #endregion */
 
+/* #region Network */
+.connected {
+    color: green;
+}
+.disconnected {
+    color: red;
+}
+/* #endregion */
+
 /* #region Tips */
 .tips-text {
     padding-top: 50px;

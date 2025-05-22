@@ -172,12 +172,12 @@ function displayListItem(itemData, itemID) {
     clone.classList.remove("placeholder");
     // set all of these clones child divs to use the listItem information
     clone.getElementsByClassName("item-id")[0].innerHTML = itemID.toString() || document.querySelectorAll('#list-items .item').length.toString(); // if an id is passed in use that (might be unnessecary if the selector is efficient)
-    clone.getElementsByClassName("item-title")[0].innerHTML = itemData.title;
-    clone.getElementsByClassName("item-tags")[0].innerHTML = itemData.tags.toString();
-    addTags(itemData.tags.split(" "));
-    clone.getElementsByClassName("item-rating")[0].innerHTML = itemData.rating.toString();
-    clone.getElementsByClassName("item-notes")[0].innerHTML = itemData.notes;
-    clone.getElementsByClassName("item-date")[0].innerHTML = itemData.date.toString();
+    clone.getElementsByClassName("item-title")[0].innerHTML = itemData.title || "";
+    clone.getElementsByClassName("item-tags")[0].innerHTML = (itemData.tags || "");
+    addTags((itemData.tags || "").split(" "));
+    clone.getElementsByClassName("item-rating")[0].innerHTML = (itemData.rating || "").toString();
+    clone.getElementsByClassName("item-notes")[0].innerHTML = itemData.notes || "";
+    clone.getElementsByClassName("item-date")[0].innerHTML = (itemData.date || "").toString();
     if (itemData.imageURL) { // if it has a unique image url, make sure to update it
         updateImage(clone.querySelectorAll(".item-image div")[0], itemData.imageURL);
     }

@@ -42,7 +42,7 @@ CREATE TABLE listData (
 itemID int UNSIGNED NOT NULL AUTO_INCREMENT,
 owner varchar(32) NOT NULL,
 listname varchar(64) NOT NULL,
-title varchar(64) NOT NULL,
+title varchar(64),
 notes varchar(1000),
 rating tinyint DEFAULT 0,
 tags varchar(100),

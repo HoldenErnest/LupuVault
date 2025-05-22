@@ -5,6 +5,7 @@
   <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://cdn.socket.io ">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/generic.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/listView.css') }}">
     <title>LupuVault</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-x32.png') }}">
@@ -19,6 +20,8 @@
 
   </head>
   <body>
+    <input type="hidden" id="initListUser" value="{{ curListUsr }}">
+    <input type="hidden" id="initListList" value="{{ curListList }}">
     <div id="escape-focus" tabindex="-1"></div>
     <!-- This is a placeholder item and will not be displayed vv -->
     <div class="item placeholder" id="placeholder-item" tabindex="-1">
@@ -84,7 +87,7 @@
     <div id="notification-area"></div>
 
     <div id="footer">
-      Lupusregina Version <span id="install-version">-</span>
+      Lupusregina Version <span id="install-version">-</span> <span id="connection_status" class="disconnected">⌔</span>
     </div>
     <input class="checkbox" type="checkbox" id="save-check">
     <label id="save-btn" for="save-check">save</label>

@@ -8,17 +8,17 @@ socket.on("connect", () => {
     statusElement?.classList.add("connected");
     statusElement?.classList.remove("disconnected");
     if (statusElement)
-        statusElement.innerHTML = "Connected";
+        statusElement.innerHTML = "⠇";
     //* join the group that coorisponds with this list
     joinGroup();
 });
 socket.on("disconnect", () => {
     console.log("disconnected");
     const statusElement = document.getElementById("connection_status");
-    statusElement?.classList.add("connected");
-    statusElement?.classList.remove("disconnected");
+    statusElement?.classList.add("disconnected");
+    statusElement?.classList.remove("connected");
     if (statusElement)
-        statusElement.innerHTML = "Disconnected";
+        statusElement.innerHTML = "⠄"; //⚠ ⠇⠄
 });
 export function sendListItemToServer(item) {
     console.log("sending to server: ", item);

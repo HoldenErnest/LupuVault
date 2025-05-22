@@ -36,3 +36,17 @@ configure apache wsgi:
 5/21/2025
  - Continuing to refactor to have sockets control the new changes
  - Only the new changes are sent to these list groups. When requested to open a new list, use js to fetch the list json.
+
+5/22/2025
+ - Making the full loop on the backend (list changes can be sent to the server, full lists are close to being able to get pulled from the API)
+
+```
+Python:
+  775 total
+TypeScript:
+  639 total
+HTML:
+ 223 total
+CSS:
+  702 total
+```

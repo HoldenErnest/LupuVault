@@ -12,7 +12,7 @@ socket.on("connect", () => {
     const statusElement = document.getElementById("connection_status");
     statusElement?.classList.add("connected");
     statusElement?.classList.remove("disconnected");
-    if (statusElement) statusElement.innerHTML = "Connected";
+    if (statusElement) statusElement.innerHTML = "⠇";
 
     //* join the group that coorisponds with this list
     joinGroup();
@@ -21,9 +21,9 @@ socket.on("connect", () => {
 socket.on("disconnect", () => {
     console.log("disconnected");
     const statusElement = document.getElementById("connection_status");
-    statusElement?.classList.add("connected");
-    statusElement?.classList.remove("disconnected");
-    if (statusElement) statusElement.innerHTML = "Disconnected";
+    statusElement?.classList.add("disconnected");
+    statusElement?.classList.remove("connected");
+    if (statusElement) statusElement.innerHTML = "⠄"; //⚠ ⠇⠄
 });
 
 export function sendListItemToServer(item: listItemExport): void {

@@ -38,6 +38,7 @@ def getRoomCode():
 
 @socketio.on('save-listItem')
 def sendListItem(listItem):
+    print("saving list Item")
     # You cant trust the client, ensure the sessioned user has access to this list
     if (database.updateListItem(getUsername(), listItem)):
         # only emmit to everyone if the changes are in place.

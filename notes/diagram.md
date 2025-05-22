@@ -11,30 +11,15 @@
 
 ### lists: #! todo
 
-- **SAVE**: AJAX on the 'save' button. POST full list to `/list/<owner>/<listname> /save?`
-- !!! make sure the post is secure, so to doesnt wipe lists on extraneous visits
-- include the `version` with the post. Only save if its newest; if not make sure to send back an error
-- **GET**: When you visit `/` it will send along your last used list which is stored in a session.
-- `session[lastListInfo] = { listname="", version="", listData=[{},{}] }`
-- save this `list` and `version` to the session.
-- on the JS side, parse the list from the session
-
-OR use sockets to change things on demand
-
-- **SAVE**: AJAX OR SOCKET on the 'save' button. (or maybe even on each change now), POST only the changed items.. using their UID to `/list/<owner>/<listname> /save?`
-- !!! make sure the post is secure (not as much of an issue since its only 1 item being changed)
+- **SAVE**: SOCKET on the 'save' button. (or maybe even on each change now).
+- !!! make sure the socket is secure (not as much of an issue since its only 1 item being changed)
 - push to all SOCKETS that have access to your list to update their lists accordingly
-- **GET**: on `/` use jinja to get your last accessed list from the database. If any edits are made by other users it will be passed via sockets.
-- If you select a different list, change the last selected and refresh the page. (this will make things like sockets more reliable)
+- **GET**: on `/` the socket connection will make sure to join whatever curList you are apart of. If any edits are made by other users it will be passed via sockets.
+- **SELECT**: If you select a different list a fetch will grab the json from the API. After that, a socket request will tell the server to change `curList` which will leave_room() before and join_room() after.
 - !!! make sure to change the socket groupping if the user changes lists. (this is handled by '/')
-- socketio will leave the last room it was in on refresh
+- **NEWLIST**: literally just select a list like normal, the server will interpret the missing list as it needing to create it. (this way Saving is exactly the same)
 
-Room Code: 
-```
-list = session["curList]
-if (user has access to list)
-session["groupCode"] = list.owner + list.listname
-```
+socketio will leave the last room it was in on refresh
 
 ```
 curList = {
