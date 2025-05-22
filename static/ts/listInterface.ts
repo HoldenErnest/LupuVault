@@ -1,7 +1,7 @@
 // Holden Ernest - 1/11/2024
 // Interface for the DOM. Sends information to clientList.ts
 
-import * as clientList from "./clientList";
+import * as clientList from "./clientList.js";
 
 const loadListBtn = document.getElementById("load-list") as HTMLButtonElement;
 const searchbar = document.getElementById("searchbar") as HTMLInputElement;
@@ -176,12 +176,12 @@ function displayListItem(itemData:clientList.listItem, itemID:number) {
     clone.classList.remove("placeholder");
     // set all of these clones child divs to use the listItem information
     clone.getElementsByClassName("item-id")[0].innerHTML = itemID.toString() || document.querySelectorAll('#list-items .item').length.toString(); // if an id is passed in use that (might be unnessecary if the selector is efficient)
-    clone.getElementsByClassName("item-title")[0].innerHTML = itemData.title;
-    clone.getElementsByClassName("item-tags")[0].innerHTML = itemData.tags.toString();
-    addTags(itemData.tags);
-    clone.getElementsByClassName("item-rating")[0].innerHTML = itemData.rating.toString();
-    clone.getElementsByClassName("item-notes")[0].innerHTML = itemData.notes;
-    clone.getElementsByClassName("item-date")[0].innerHTML = itemData.date.toString()
+    clone.getElementsByClassName("item-title")[0].innerHTML = itemData.title || "";
+    clone.getElementsByClassName("item-tags")[0].innerHTML = (itemData.tags || "");
+    addTags((itemData.tags || "").split(" "));
+    clone.getElementsByClassName("item-rating")[0].innerHTML = (itemData.rating || "").toString();
+    clone.getElementsByClassName("item-notes")[0].innerHTML = itemData.notes || "";
+    clone.getElementsByClassName("item-date")[0].innerHTML = (itemData.date || "").toString()
     if (itemData.imageURL) { // if it has a unique image url, make sure to update it
         updateImage(clone.querySelectorAll(".item-image div")[0] as HTMLElement, itemData.imageURL)
     }
@@ -195,6 +195,7 @@ function displayListItem(itemData:clientList.listItem, itemID:number) {
  * @returns  
  */
 function newItem() {
+    console.log("thigs working");
     if (hasNewItem) {console.log("there is already an unsubmitted new Item");return}; // dont make a second new item
     hasNewItem = true;
     var original = document.getElementById('placeholder-item') as HTMLElement;

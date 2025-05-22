@@ -125,7 +125,11 @@ def removeGuestForList(connectedUser, newGuest, listOwner, listname):
 
 def getFirstList(user):
     """Get the last opened list"""
-    return getListsInOrder(user)[0]
+    lists = getListsInOrder(user)
+    if (len(lists) > 0):
+        return lists[0]
+    else:
+        return {"owner": user, "listname":"newList"}
 
 def getListsInOrder(user):
     """Returns the lists in an order that they will be displayed for the user"""
@@ -146,12 +150,25 @@ def getListsInOrder(user):
     else:
         return () #! TEST
 
+def ensureListExists(owner, listname):
+    """Add a list if it doesnt exist so there will never be problems"""
+    createList(owner, listname)
+    #TODO: make this not as computational on the database?
+
 def updateListItem(connectedUser, listItem):
     """Update a list item, if it doesnt have an item with that uid, make one"""
     listOwner = listItem["owner"]
     listname = listItem["listname"]
     if (not userHasAccess(connectedUser, listOwner, listname, True)):
         return False
+    
+    ensureListExists(listOwner, listname)
+
+    #TODO: allow the object to not have some information.
+    # + ", ".join(update_fields)
+    # if user_object.name is not None:
+    #update_fields.append("name = %s")
+    #update_values.append(user_object.name)
 
     if (listItem["itemID"] < 0):
         sql = "INSERT INTO listData (owner, listname, title, notes, rating, tags, date, imageURL) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"

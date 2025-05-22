@@ -3,7 +3,7 @@
 # Production uses a wsgi to serve this
 
 from flask import *
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, join_room, send, emit
 import os
 import sys
 
@@ -200,4 +200,4 @@ def newUserPost(key):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True, port=2001)

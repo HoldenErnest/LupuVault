@@ -1,11 +1,12 @@
 // Holden Ernest - 5/20/2025
 // Controls the interaction socket between the clients and the server
+import { updateFromChange } from './clientList.js';
 const socket = io();
 socket.on("connect", () => {
     console.log("connected");
     const statusElement = document.getElementById("connection_status");
-    statusElement?.classList.add("good");
-    statusElement?.classList.remove("bad");
+    statusElement?.classList.add("connected");
+    statusElement?.classList.remove("disconnected");
     if (statusElement)
         statusElement.innerHTML = "Connected";
     //* join the group that coorisponds with this list
@@ -14,8 +15,8 @@ socket.on("connect", () => {
 socket.on("disconnect", () => {
     console.log("disconnected");
     const statusElement = document.getElementById("connection_status");
-    statusElement?.classList.add("bad");
-    statusElement?.classList.remove("good");
+    statusElement?.classList.add("connected");
+    statusElement?.classList.remove("disconnected");
     if (statusElement)
         statusElement.innerHTML = "Disconnected";
 });
@@ -25,13 +26,8 @@ export function sendListItemToServer(item) {
 }
 socket.on('update-listItem', (item) => {
     console.log("recieving updated item! " + item);
+    updateFromChange(item);
 });
-export function sendMessage() {
-    const input = document.getElementById("messageInput");
-    const message = input.value;
-    socket.send(message);
-    input.value = '';
-}
 function joinGroup() {
     console.log("joining group");
     socket.emit("join_group");

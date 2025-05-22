@@ -1,6 +1,6 @@
 // Holden Ernest - 1/11/2024
 // Interface for the DOM. Sends information to clientList.ts
-const saveBtn = document.getElementById("save");
+import * as clientList from "./clientList.js";
 const loadListBtn = document.getElementById("load-list");
 const searchbar = document.getElementById("searchbar");
 const escapeFocusElem = document.getElementById("escape-focus");
@@ -12,7 +12,7 @@ const parentOfList = document.getElementById('list-items');
 searchbar.addEventListener('input', updateSearch);
 //document.getElementById("sort-list")!.onchange = sort_all;
 //document.getElementById("sort-order")!.onchange = sort_all;
-//document.getElementById("save-btn")!.onclick = saveList;
+document.getElementById("save-btn").onclick = saveChanges;
 document.getElementById("add-item-btn").onclick = newItem;
 //document.getElementById("new-list-button")!.onclick = newList;
 //document.getElementById("sort-order")!.onclick = toggleAscendingSort;
@@ -20,6 +20,9 @@ var sortOrder = 1;
 var tagsDictionary = {}; // keeps track of how many times this tag was used
 var hasNewItem = false;
 var madeChange = false;
+function saveChanges() {
+    clientList.pushAllChanges();
+}
 function updateSearch() {
     var searched = searchbar.value;
     if (searched == "") {
@@ -171,7 +174,7 @@ function displayListItem(itemData, itemID) {
     clone.getElementsByClassName("item-id")[0].innerHTML = itemID.toString() || document.querySelectorAll('#list-items .item').length.toString(); // if an id is passed in use that (might be unnessecary if the selector is efficient)
     clone.getElementsByClassName("item-title")[0].innerHTML = itemData.title;
     clone.getElementsByClassName("item-tags")[0].innerHTML = itemData.tags.toString();
-    addTags(itemData.tags);
+    addTags(itemData.tags.split(" "));
     clone.getElementsByClassName("item-rating")[0].innerHTML = itemData.rating.toString();
     clone.getElementsByClassName("item-notes")[0].innerHTML = itemData.notes;
     clone.getElementsByClassName("item-date")[0].innerHTML = itemData.date.toString();
@@ -186,6 +189,7 @@ function displayListItem(itemData, itemID) {
  * @returns
  */
 function newItem() {
+    console.log("thigs working");
     if (hasNewItem) {
         console.log("there is already an unsubmitted new Item");
         return;
@@ -395,8 +399,4 @@ function removeItem(anItem) {
         hasNewItem = false;
     anItem.remove();
     sort_all();
-}
-export function displayList(listData) {
-    removeAllItems();
-    displayListItems(listData);
 }

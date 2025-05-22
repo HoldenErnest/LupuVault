@@ -32,3 +32,7 @@ configure apache wsgi:
  - `pingInterval`: 25000ms (25 sec)
  - SocketIO allows you to send to a single user with `emit('my event', my_data, to=user_sid)` (not useful in this case)
  - "rooms" can be created which users can join given the room code.
+
+5/21/2025
+ - Continuing to refactor to have sockets control the new changes
+ - Only the new changes are sent to these list groups. When requested to open a new list, use js to fetch the list json.
