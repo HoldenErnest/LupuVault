@@ -1,21 +1,28 @@
 // Holden Ernest - 5/20/2025
 // Holds information on what should be rendered on the main list page
 import * as socket from './socket.js';
+import * as UI from './listInterface.js';
 const whoAmI = document.getElementById("initWhoAmI").value;
 var currentListName = document.getElementById("initListList").value;
 var currentListOwner = document.getElementById("initListUser").value;
 var changes = {};
 var newItemID = -1; // give a temporary identification to each new item.
+init();
+async function init() {
+    await requestAllAccessableLists();
+    await requestOpenList(currentListOwner, currentListName);
+}
 /**
  * Trys open list
  * @param url a link to the json from the API
  */
-export function requestOpenList(url) {
-    //TODO: fetch the json object, update some things..
-    var listData = [];
-    var owner = "";
-    var listname = "";
-    openList(owner, listname, listData);
+export async function requestOpenList(user, listname) {
+    console.log("OPENING: lists/" + user + "/" + listname);
+    //TODO: start loading ". . ." animation
+    var listItems = await downloadAPI("lists/" + user + "/" + listname);
+    //TODO: end loading animation
+    var listData = listItems;
+    openList(user, listname, listData);
 }
 export function removeList(params) {
     //TODO: Not Urgent.. delete list if you own this (including the guests)
@@ -24,16 +31,33 @@ function openList(owner, listname, listData) {
     currentListName = listname;
     currentListOwner = owner;
     clearAllChanges();
+    UI.displayListItems(listData);
     //TODO: refresh UI
 }
-export function requestAllAccessableLists() {
-    //TODO: fetch from a newly created api that gets a json of all accessable lists.
+export async function requestAllAccessableLists() {
+    var allLists = await downloadAPI("lists");
 }
 /**
  * Virtually creates a new list (any future saves will be sent as this new list)
  */
 export function createNewList(listname) {
     openList(whoAmI, listname, []);
+}
+async function downloadAPI(path) {
+    const url = "/api/" + path;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        const json = await response.json();
+        return json;
+    }
+    catch (error) {
+        console.error(error.message);
+        //TODO: better error when fetch fails
+        return [];
+    }
 }
 /**
  * Creates a new list item with an id so the user can edit it

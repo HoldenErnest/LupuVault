@@ -1,7 +1,7 @@
 // Holden Ernest - 5/20/2025
 // Controls the interaction socket between the clients and the server
 
-import { listItem, listItemExport, updateFromChange } from './clientList.js';
+import { listItem, listItemExtended, updateFromChange } from './clientList.js';
 
 
 declare const io: any;  // This tells TypeScript that 'io' exists globally
@@ -26,7 +26,7 @@ socket.on("disconnect", () => {
     if (statusElement) statusElement.innerHTML = "⠄"; //⚠ ⠇⠄
 });
 
-export function sendListItemToServer(item: listItemExport): void {
+export function sendListItemToServer(item: listItemExtended): void {
     console.log("sending to server: ", item);
     socket.emit('save-listItem', item);
 }

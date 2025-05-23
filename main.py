@@ -23,6 +23,7 @@ mimetypes.add_type('application/javascript', '.js')
 mimetypes.add_type('application/typescript', '.ts')
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 app.config['SECRET_KEY'] = os.getenv('FLASK_KEY')
 app.config["SESSION_PERMANENT"] = True
 socketio = SocketIO(app)
@@ -109,11 +110,6 @@ def createDetailedPage(template, pageExtra:PageExtras):
 
 
 ### Main
-@app.route('/<path:path>/')
-def redirect_trailing_slash(path):
-    """Redirect any sites that end in a '/' to go to the page that doesnt have a '/'"""
-    return redirect('/' + path)
-
 @app.route("/")
 def indexPage():
     """Go to your default list"""
@@ -127,6 +123,8 @@ def indexPage():
 ### APIS
 @app.route("/api/notifications/<user>")
 def getNotifications(user):
+    if (not signedIn()):
+        return jsonify([])
     """Returns a json list of all notifications, to be grabbed from ajax calls"""
     apis.getNotifications(user)
 
@@ -134,13 +132,15 @@ def getNotifications(user):
 def getList(owner, listname):
     """Strictly API route"""
     if (not signedIn()):
-        return redirect("/login") #! warning noti
+        return jsonify([])
     currentUser = getUsername()
     
     return jsonify(database.getListDict(currentUser, owner, listname))
 
 @app.route("/api/lists")
 def getAllLists():
+    if (not signedIn()):
+        return jsonify([]) #TODO: SETUP ERROR CODES
     currentUser = getUsername()
     return jsonify(database.getListsInOrder(currentUser))
 ### END APIS
@@ -162,6 +162,7 @@ def loginPagePost():
     if (database.hasUser(username, password)):
         session["username"] = username
         session["password"] = password
+        del session["curList"]
         return redirect("/")
 
     return createDetailedPage(template="login.html", pageExtra=PageExtras(noti=Notification(stat="warning", msg="Incorrect username or password")))

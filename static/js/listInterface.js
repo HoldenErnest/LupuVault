@@ -156,7 +156,7 @@ function updateImage(theItemImage, url) {
  * Displays list items as elements
  * @param listData
  */
-function displayListItems(listData) {
+export function displayListItems(listData) {
     let itemCount = document.querySelectorAll('#list-items .item').length + 1;
     for (let i = 0; i < listData.length; i++) {
         displayListItem(listData[i], itemCount + i);

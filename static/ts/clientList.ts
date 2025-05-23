@@ -2,6 +2,7 @@
 // Holds information on what should be rendered on the main list page
 
 import * as socket from './socket.js';
+import * as UI from './listInterface.js';
 
 const whoAmI:string = (document.getElementById("initWhoAmI") as HTMLInputElement).value
 var currentListName:string = (document.getElementById("initListList") as HTMLInputElement).value
@@ -20,23 +21,30 @@ export type listItem = {
     "date"?: string,
     "imageURL"?: string
 }
-export interface listItemExport extends listItem {
+export interface listItemExtended extends listItem {
     "owner": string,
     "listname": string,
 }
 
+init()
+
+async function init() {
+    await requestAllAccessableLists();
+    await requestOpenList(currentListOwner, currentListName);
+}
 
 
 /**
  * Trys open list
  * @param url a link to the json from the API
  */
-export function requestOpenList(url: string) {
-    //TODO: fetch the json object, update some things..
-    var listData: listItem[] = [];
-    var owner: string = "";
-    var listname: string = "";
-    openList(owner, listname, listData);
+export async function requestOpenList(user: string, listname: string) {
+    console.log("OPENING: lists/" + user + "/" + listname);
+    //TODO: start loading ". . ." animation
+    var listItems = await downloadAPI("lists/" + user + "/" + listname) as listItemExtended[];
+    //TODO: end loading animation
+    var listData: listItem[] = listItems as listItem[];
+    openList(user, listname, listData);
 }
 export function removeList(params?: string) {
     //TODO: Not Urgent.. delete list if you own this (including the guests)
@@ -46,18 +54,36 @@ function openList(owner: string, listname: string, listData: listItem[]) {
     currentListName = listname;
     currentListOwner = owner;
     clearAllChanges();
+    UI.displayListItems(listData)
     //TODO: refresh UI
 }
 
-export function requestAllAccessableLists() {
-    //TODO: fetch from a newly created api that gets a json of all accessable lists.
+export async function requestAllAccessableLists() {
+    var allLists = await downloadAPI("lists") as string[][];
 }
 
 /**
  * Virtually creates a new list (any future saves will be sent as this new list)
  */
-export function createNewList(listname: string) {
+export function createNewList(listname: string): any {
     openList(whoAmI, listname, [])
+}
+
+async function downloadAPI(path: string): Promise<listItemExtended[] | string[][]> {
+    const url = "/api/" + path
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        const json = await response.json();
+        return json;
+    } catch (error: any) {
+        console.error(error.message);
+        //TODO: better error when fetch fails
+        return [];
+    }
 }
 
 
@@ -104,7 +130,7 @@ export function updateFromChange(item: listItem) {
 export function pushListItem(item: listItem) {
     //* before you send any new items (these are items with a negative ID):
     //TODO: if (-id) Tell the listInterface to delete this item.
-    var exportItem: listItemExport = item as listItemExport //! is this a correct line?
+    var exportItem: listItemExtended = item as listItemExtended //! is this a correct line?
     exportItem.owner = currentListOwner;
     exportItem.listname = currentListName;
     //TODO: if (-id): remove the id completely

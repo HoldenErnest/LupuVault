@@ -50,3 +50,8 @@ HTML:
 CSS:
   702 total
 ```
+
+5/23/2025
+ - Setup the API calls, which completes the full loop (GET/SAVE lists).
+ - !!! SQL connections get sad when its used by everyone at the same time.
+    - instead, try `connection pooling` or a `query queue`
