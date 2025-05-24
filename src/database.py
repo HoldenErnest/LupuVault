@@ -4,8 +4,11 @@
 import os
 import hashlib
 import uuid
-import mysql.connector
+import mysql.connector.pooling
 from pathlib import Path
+#from main import g
+from __main__ import g
+
 import listHandler
 
 dotenv_path = Path(__file__).resolve().parent.parent / '.env'
@@ -16,52 +19,58 @@ load_dotenv(dotenv_path)
 USER_TABLE = "users"
 LIST_TABLE = "lists"
 
-MY_DB = mysql.connector.connect(
+connection_pool = mysql.connector.pooling.MySQLConnectionPool(
+    pool_name="web_pool",
+    pool_size=5,
     host="localhost", # localhost
     user=os.getenv('DB_USER'), # user
     password=os.getenv('DB_PASS'), # pass
     database=os.getenv('DB_NAME') # DB
 )
-dbCursor = MY_DB.cursor()
 
-def _checkDBConnection():
-    global dbCursor
-    if (not MY_DB.is_connected()):
-        print("DB was disconnected, reconnecting..")
-        MY_DB.connect(
-            host="localhost", # localhost
-            user=os.getenv('DB_USER'), # user
-            password=os.getenv('DB_PASS'), # pass
-            database=os.getenv('DB_NAME') # DB
-        )
-        dbCursor = MY_DB.cursor()
+def _get_db():
+    if 'db' not in g:
+        g.db = connection_pool.get_connection()
+    return g.db
+
+def close_db(error):
+    db = g.pop('db', None)
+    if db is not None:
+        db.close()
 
 def _tryInsert(sql, vals):
     """Build all SQL inserts through this"""
-    _checkDBConnection()
     try:
-        dbCursor.execute(sql, vals)
-        MY_DB.commit()
+        conn = _get_db()
+        cursor = conn.cursor()
+        cursor.execute(sql, vals)
+        conn.commit()
+        cursor.close()
         return True
     except (mysql.connector.Error, mysql.connector.Warning) as e:
         print("SQL Insert Error: ")
         print(e)
         return False
 
-def _trySelect(sql, vals):
+def _trySelect(sql, vals, getCursor=False):
     """Build all SQL selects through this"""
-    _checkDBConnection()
     try:
-        dbCursor.execute(sql, vals)
-        res = dbCursor.fetchall()
+        conn = _get_db()
+        cursor = conn.cursor()
+        cursor.execute(sql, vals)
+        res = cursor.fetchall()
+        cursor.close()
         if res:
-            return res
+            if (getCursor):
+                return res, cursor
+            else:
+                return res
         return None
     except (mysql.connector.Error, mysql.connector.Warning) as e:
         print("SQL Select Error: ")
         print(e)
         return None
-
+    
 def hasUsername(username):
     sql = "SELECT username FROM users WHERE username = %s limit 1"
     vals = (username,)
@@ -161,7 +170,6 @@ def updateListItem(connectedUser, listItem):
     ensureListExists(connectedUser, listOwner, listname) # since we know userHasAccess, this list already exists if its from another user
 
     (sql, vals) = getQueryFromListItem(listItem)
-    print(sql, " :: ", vals)
     return _tryInsert(sql, vals)
 
 def getQueryFromListItem(listItem):
@@ -224,9 +232,9 @@ def getListItemDict(connectedUser, listOwner, listname, itemID):
 
     sql = "SELECT * FROM listData WHERE owner = %s AND listname = %s AND itemID = %s"
     vals = (listOwner,listname, itemID)
-    res = _trySelect(sql, vals)
+    res, cursor = _trySelect(sql, vals, True)
     if (res):
-        return listHandler.listSQLToDict(dbCursor, res)
+        return listHandler.listSQLToDict(cursor, res)
 
 def getListDict(connectedUser, listOwner, listname):
     """Returns a JSON object of the requested list"""
@@ -235,9 +243,9 @@ def getListDict(connectedUser, listOwner, listname):
 
     sql = "SELECT * FROM listData WHERE owner = %s AND listname = %s"
     vals = (listOwner,listname)
-    res = _trySelect(sql, vals)
+    res, cursor = _trySelect(sql, vals, True)
     if (res):
-        return listHandler.listSQLToDict(dbCursor, res)
+        return listHandler.listSQLToDict(cursor, res)
     else:
         return []
 

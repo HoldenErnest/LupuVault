@@ -109,6 +109,11 @@ def createDetailedPage(template, pageExtra:PageExtras):
 
 
 
+@app.teardown_appcontext
+def close_db(error):
+    """Close the pooling for the database"""
+    database.close_db(error)
+
 ### Main
 @app.route("/")
 def indexPage():
@@ -162,7 +167,8 @@ def loginPagePost():
     if (database.hasUser(username, password)):
         session["username"] = username
         session["password"] = password
-        del session["curList"]
+        if ("curList" in session):
+            del session["curList"]
         return redirect("/")
 
     return createDetailedPage(template="login.html", pageExtra=PageExtras(noti=Notification(stat="warning", msg="Incorrect username or password")))
