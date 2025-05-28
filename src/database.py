@@ -7,9 +7,13 @@ import uuid
 import mysql.connector.pooling
 from pathlib import Path
 #from main import g
-from __main__ import g
+#from __main__ import g
 
 import listHandler
+g = None
+def setG(gg):
+    global g
+    g = gg
 
 dotenv_path = Path(__file__).resolve().parent.parent / '.env'
 from dotenv import load_dotenv, find_dotenv

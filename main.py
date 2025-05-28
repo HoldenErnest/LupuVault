@@ -3,7 +3,7 @@
 # Production uses a wsgi to serve this
 
 from flask import *
-from flask_socketio import SocketIO, join_room, send, emit
+from flask_socketio import SocketIO, join_room, leave_room, send, emit
 import os
 import sys
 
@@ -26,11 +26,15 @@ app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SECRET_KEY'] = os.getenv('FLASK_KEY')
 app.config["SESSION_PERMANENT"] = True
+
 socketio = SocketIO(app)
+
 
 import socketEvents # make sure the script is loaded to recieve the events
 
-
+if (__name__ == "__main__"):
+    database.setG(g)
+    
 
 
 ###
@@ -220,4 +224,5 @@ def newUserPost(key):
 
 
 if __name__ == '__main__':
+    socketEvents.register_events(socketio, getCurList, getUsername, join_room, leave_room)
     socketio.run(app, debug=True, port=2001)
