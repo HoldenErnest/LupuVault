@@ -40,7 +40,11 @@ def getRoomCode():
 def sendListItem(listItem):
     print("saving list Item")
     # You cant trust the client, ensure the sessioned user has access to this list
-    if (database.updateListItem(getUsername(), listItem)):
+    createdItem = database.updateListItem(getUsername(), listItem)
+    print(createdItem, " is the item")
+    if (createdItem): #TODO: you MUST send back the item from the database
         # only emmit to everyone if the changes are in place.
+        if (createdItem is int):
+            listItem["itemID"] = createdItem
         socketio.emit('update-listItem', {'item': listItem}, room=getRoomCode())
         #package listItem into an object in case you want to read other info like status.
