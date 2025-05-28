@@ -1,6 +1,6 @@
 // Holden Ernest - 5/20/2025
 // Controls the interaction socket between the clients and the server
-import { updateFromChange } from './clientList.js';
+import { updateWithNewItem } from './clientList.js';
 const socket = io();
 socket.on("connect", () => {
     console.log("connected");
@@ -26,7 +26,7 @@ export function sendListItemToServer(item) {
 }
 socket.on('update-listItem', (item) => {
     console.log("recieving updated item! " + item);
-    updateFromChange(item);
+    updateWithNewItem(item);
 });
 function joinGroup() {
     console.log("joining group");

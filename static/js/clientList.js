@@ -7,10 +7,11 @@ var currentListName = document.getElementById("initListList").value;
 var currentListOwner = document.getElementById("initListUser").value;
 var changes = {};
 var newItemID = -1; // give a temporary identification to each new item.
+var allItems = {};
 init();
 async function init() {
-    await requestAllAccessableLists();
-    await requestOpenList(currentListOwner, currentListName);
+    requestAllAccessableLists();
+    requestOpenList(currentListOwner, currentListName);
 }
 /**
  * Trys open list
@@ -31,8 +32,8 @@ function openList(owner, listname, listData) {
     currentListName = listname;
     currentListOwner = owner;
     clearAllChanges();
-    UI.displayListItems(listData);
-    //TODO: refresh UI
+    setupListDict(listData);
+    updateUIFromDict();
 }
 export async function requestAllAccessableLists() {
     var allLists = await downloadAPI("lists");
@@ -88,8 +89,19 @@ function mergeItems(oldItem, newValues) {
  * Updates the UI from a change (most likely recieved from the socket)
  * @param item the list item with the changes
  */
-export function updateFromChange(item) {
-    console.log("recieved " + item + " from the server, and making UI changes");
+export function updateWithNewItem(item) {
+    //TODO: make this not so bad (CHANGE ONLY THIS ITEM, DONT REMOVE ALL)
+    allItems[item.itemID.toString()] = item;
+    updateUIFromDict();
+}
+function setupListDict(list) {
+    allItems = {};
+    list.forEach(item => {
+        allItems[item.itemID.toString()] = item;
+    });
+}
+function updateUIFromDict() {
+    UI.displayListItems(Object.values(allItems));
 }
 /**
  * Saves the given list item to the server.
@@ -109,7 +121,7 @@ export function pushListItem(item) {
 export function pushAllChanges() {
     //! temp
     addChange({ itemID: 2, title: "this is an old title (dont show)", notes: "some notes (untouched?)" });
-    addChange({ itemID: -2, title: "This is a new item (show)", rating: 1 });
+    addChange({ itemID: -2, title: "NEW THING", rating: 1 });
     addChange({ itemID: 2, title: "this is a better title" });
     //! temp
     for (var key in changes) {
