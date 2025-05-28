@@ -26,7 +26,7 @@ export function sendListItemToServer(item) {
 }
 socket.on('update-listItem', (item) => {
     console.log("recieving updated item! " + item);
-    updateWithNewItem(item);
+    updateWithNewItem(item["item"]);
 });
 function joinGroup() {
     console.log("joining group");

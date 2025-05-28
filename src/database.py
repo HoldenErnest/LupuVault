@@ -50,7 +50,10 @@ def _tryInsert(sql, vals):
         cursor.execute(sql, vals)
         conn.commit()
         cursor.close()
-        return True
+        if (sql.startswith("INSERT INTO listData")):
+            return _trySelect("SELECT LAST_INSERT_ID();", ())
+        else:
+            return True
     except (mysql.connector.Error, mysql.connector.Warning) as e:
         print("SQL Insert Error: ")
         print(e)

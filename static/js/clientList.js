@@ -121,7 +121,7 @@ export function pushListItem(item) {
 export function pushAllChanges() {
     //! temp
     addChange({ itemID: 2, title: "this is an old title (dont show)", notes: "some notes (untouched?)" });
-    addChange({ itemID: -2, title: "NEW THING", rating: 1 });
+    addChange({ itemID: -2, title: "11111111111", rating: 1 });
     addChange({ itemID: 2, title: "this is a better title" });
     //! temp
     for (var key in changes) {

@@ -162,6 +162,7 @@ function updateImage(theItemImage:HTMLElement, url:string) {
  * @param listData 
  */
 export function displayListItems(listData:clientList.listItem[]) {
+    removeAllItems()
     let itemCount = document.querySelectorAll('#list-items .item').length + 1;
     for(let i = 0; i < listData.length; i++) {
         displayListItem(listData[i], itemCount+i);

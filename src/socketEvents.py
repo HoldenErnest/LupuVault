@@ -39,10 +39,12 @@ def register_events(socketio, getCurList, getUsername, join_room, leave_room):
         print("saving list Item")
         # You cant trust the client, ensure the sessioned user has access to this list
         createdItem = database.updateListItem(getUsername(), listItem)
-        print(createdItem, " is the item")
-        if (createdItem): #TODO: you MUST send back the item from the database
+
+        if (createdItem):
             # only emmit to everyone if the changes are in place.
-            if (createdItem is int):
-                listItem["itemID"] = createdItem
+            if (isinstance(createdItem, list)):
+                listItem["itemID"] = createdItem[0][0]
+                print(createdItem, " is the item")
+            print ("sending", listItem)
             socketio.emit('update-listItem', {'item': listItem}, room=getRoomCode())
             #package listItem into an object in case you want to read other info like status.

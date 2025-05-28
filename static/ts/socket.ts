@@ -31,9 +31,9 @@ export function sendListItemToServer(item: listItemExtended): void {
     socket.emit('save-listItem', item);
 }
 
-socket.on('update-listItem', (item: listItem) => {
+socket.on('update-listItem', (item: {[keys: string]: listItem}) => {
     console.log("recieving updated item! " + item)
-    updateWithNewItem(item)
+    updateWithNewItem(item["item"])
 });
 
 function joinGroup(): void {
