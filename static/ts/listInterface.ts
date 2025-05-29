@@ -25,6 +25,8 @@ var tagsDictionary: {[key: string]: number} = {} // keeps track of how many time
 var hasNewItem = false;
 var madeChange = false;
 
+var allItemElements: {[key: string]: HTMLElement} = {} // match all html elements to an ID
+
 function saveChanges() {
     clientList.pushAllChanges()
 }

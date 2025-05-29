@@ -32,9 +32,7 @@ socketio = SocketIO(app)
 
 import socketEvents # make sure the script is loaded to recieve the events
 
-if (__name__ == "__main__"):
-    database.setG(g)
-    
+database.setG(g)
 
 
 ###
@@ -221,8 +219,8 @@ def newUserPost(key):
     
     return redirect("/login")
 
+socketEvents.register_events(socketio, getCurList, getUsername, join_room, leave_room)
 
 
 if __name__ == '__main__':
-    socketEvents.register_events(socketio, getCurList, getUsername, join_room, leave_room)
     socketio.run(app, debug=True, port=2001)

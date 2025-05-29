@@ -155,9 +155,9 @@ export function pushListItem(item: listItem) {
  */
 export function pushAllChanges() {
     //! temp
-    addChange({itemID: 2, title: "this is an old title (dont show)", notes: "some notes (untouched?)"})
+    addChange({itemID: 1, title: "this is an old title (dont show)", notes: "some notes (untouched?)"})
     addChange({itemID: -2, title: "11111111111", rating: 1})
-    addChange({itemID: 2, title: "this is a better title"})
+    addChange({itemID: 1, title: "BETTER TITLE LMAO"})
     //! temp
     for (var key in changes) {
         pushListItem(changes[key])

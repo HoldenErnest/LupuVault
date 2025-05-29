@@ -55,3 +55,7 @@ CSS:
  - Setup the API calls, which completes the full loop (GET/SAVE lists).
  - !!! SQL connections get sad when its used by everyone at the same time.
     - instead, try `connection pooling` or a `query queue`
+
+5/29/2025
+ - Python is weird and runs all scripts instead of a normal "import", this makes it pretty annoying to refrence the main script since it will reset all app config stuff.
+ - Instead: try to never circular import, call methods to pass the variables into the script

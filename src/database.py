@@ -47,6 +47,7 @@ def _tryInsert(sql, vals):
     try:
         conn = _get_db()
         cursor = conn.cursor()
+        print("INSERTING OR SOMETHING: ", sql, vals)
         cursor.execute(sql, vals)
         conn.commit()
         cursor.close()
