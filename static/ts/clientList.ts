@@ -12,7 +12,7 @@ var changes:{[keys: string]: listItem} = {}
 
 var newItemID = -1; // give a temporary identification to each new item.
 
-var allItems:{[keys: string]: listItem} = {}
+var allItems:{[keys: string]: listItem} = {} //TODO: remove this? not needed
 
 export type listItem = {
     "itemID": number,
@@ -24,6 +24,10 @@ export type listItem = {
     "imageURL"?: string
 }
 export interface listItemExtended extends listItem {
+    "owner": string,
+    "listname": string,
+}
+export type listDef = {
     "owner": string,
     "listname": string,
 }
@@ -60,8 +64,16 @@ function openList(owner: string, listname: string, listData: listItem[]) {
     updateUIFromDict()
 }
 
-export async function requestAllAccessableLists() {
-    var allLists = await downloadAPI("lists") as string[][];
+async function requestAllAccessableLists() {
+    var listPacked = await downloadAPI("lists") as string[][];
+    var allLists: listDef[] = []
+    listPacked.forEach(listInfo => {
+        allLists.push({
+            "owner": listInfo[0],
+            "listname": listInfo[1],
+        })
+    });
+    UI.displayAvailableLists(allLists);
 }
 
 /**
@@ -124,8 +136,9 @@ function mergeItems(oldItem: listItem, newValues: listItem): listItem {
  */
 export function updateWithNewItem(item: listItem) {
     //TODO: make this not so bad (CHANGE ONLY THIS ITEM, DONT REMOVE ALL)
-    allItems[item.itemID.toString()] = item;
-    updateUIFromDict()
+    ////allItems[item.itemID.toString()] = item;
+    ////updateUIFromDict()
+    UI.displayItemChange(item);
 }
 function setupListDict(list: listItem[]) {
     allItems = {}
@@ -134,7 +147,7 @@ function setupListDict(list: listItem[]) {
     });
 }
 function updateUIFromDict() {
-    UI.displayListItems(Object.values(allItems))
+    UI.displayList(Object.values(allItems))
 }
 
 /**
@@ -143,9 +156,11 @@ function updateUIFromDict() {
 export function pushListItem(item: listItem) {
     //* before you send any new items (these are items with a negative ID):
     //TODO: if (-id) Tell the listInterface to delete this item.
-    var exportItem: listItemExtended = item as listItemExtended //! is this a correct line?
+    var exportItem: listItemExtended = item as listItemExtended
     exportItem.owner = currentListOwner;
     exportItem.listname = currentListName;
+    if (exportItem.date)
+        exportItem.date = toDateTime(new Date(exportItem.date!));
     //TODO: if (-id): remove the id completely
     socket.sendListItemToServer(exportItem)
 }
@@ -154,11 +169,6 @@ export function pushListItem(item: listItem) {
  * Push all changes to the server through the socket
  */
 export function pushAllChanges() {
-    //! temp
-    addChange({itemID: 1, title: "this is an old title (dont show)", notes: "some notes (untouched?)"})
-    addChange({itemID: -2, title: "11111111111", rating: 1})
-    addChange({itemID: 1, title: "BETTER TITLE LMAO"})
-    //! temp
     for (var key in changes) {
         pushListItem(changes[key])
         removeChange(key)

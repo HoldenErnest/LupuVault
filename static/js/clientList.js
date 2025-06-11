@@ -7,7 +7,7 @@ var currentListName = document.getElementById("initListList").value;
 var currentListOwner = document.getElementById("initListUser").value;
 var changes = {};
 var newItemID = -1; // give a temporary identification to each new item.
-var allItems = {};
+var allItems = {}; //TODO: remove this? not needed
 init();
 async function init() {
     requestAllAccessableLists();
@@ -35,8 +35,16 @@ function openList(owner, listname, listData) {
     setupListDict(listData);
     updateUIFromDict();
 }
-export async function requestAllAccessableLists() {
-    var allLists = await downloadAPI("lists");
+async function requestAllAccessableLists() {
+    var listPacked = await downloadAPI("lists");
+    var allLists = [];
+    listPacked.forEach(listInfo => {
+        allLists.push({
+            "owner": listInfo[0],
+            "listname": listInfo[1],
+        });
+    });
+    UI.displayAvailableLists(allLists);
 }
 /**
  * Virtually creates a new list (any future saves will be sent as this new list)
@@ -91,8 +99,9 @@ function mergeItems(oldItem, newValues) {
  */
 export function updateWithNewItem(item) {
     //TODO: make this not so bad (CHANGE ONLY THIS ITEM, DONT REMOVE ALL)
-    allItems[item.itemID.toString()] = item;
-    updateUIFromDict();
+    ////allItems[item.itemID.toString()] = item;
+    ////updateUIFromDict()
+    UI.displayItemChange(item);
 }
 function setupListDict(list) {
     allItems = {};
@@ -101,7 +110,7 @@ function setupListDict(list) {
     });
 }
 function updateUIFromDict() {
-    UI.displayListItems(Object.values(allItems));
+    UI.displayList(Object.values(allItems));
 }
 /**
  * Saves the given list item to the server.
@@ -109,9 +118,11 @@ function updateUIFromDict() {
 export function pushListItem(item) {
     //* before you send any new items (these are items with a negative ID):
     //TODO: if (-id) Tell the listInterface to delete this item.
-    var exportItem = item; //! is this a correct line?
+    var exportItem = item;
     exportItem.owner = currentListOwner;
     exportItem.listname = currentListName;
+    if (exportItem.date)
+        exportItem.date = toDateTime(new Date(exportItem.date));
     //TODO: if (-id): remove the id completely
     socket.sendListItemToServer(exportItem);
 }
@@ -119,11 +130,6 @@ export function pushListItem(item) {
  * Push all changes to the server through the socket
  */
 export function pushAllChanges() {
-    //! temp
-    addChange({ itemID: 1, title: "this is an old title (dont show)", notes: "some notes (untouched?)" });
-    addChange({ itemID: -2, title: "11111111111", rating: 1 });
-    addChange({ itemID: 1, title: "BETTER TITLE LMAO" });
-    //! temp
     for (var key in changes) {
         pushListItem(changes[key]);
         removeChange(key);

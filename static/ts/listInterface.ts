@@ -1,7 +1,7 @@
 // Holden Ernest - 1/11/2024
 // Interface for the DOM. Sends information to clientList.ts
 
-import * as clientList from "./clientList.js";
+import * as ClientList from "./clientList.js";
 
 const loadListBtn = document.getElementById("load-list") as HTMLButtonElement;
 const searchbar = document.getElementById("searchbar") as HTMLInputElement;
@@ -13,12 +13,12 @@ const parentOfList = document.getElementById('list-items') as HTMLElement;
 //saveBtn.addEventListener('click', onButtonSave);
 //loadListBtn.addEventListener('click', loadList);
 searchbar!.addEventListener('input', updateSearch);
-//document.getElementById("sort-list")!.onchange = sort_all;
-//document.getElementById("sort-order")!.onchange = sort_all;
-document.getElementById("save-btn")!.onclick = saveChanges;
+document.getElementById("sort-list")!.onchange = sort_all;
+document.getElementById("sort-order")!.onchange = sort_all;
+document.getElementById("save-btn")!.onclick = saveAllChanges;
 document.getElementById("add-item-btn")!.onclick = newItem;
 //document.getElementById("new-list-button")!.onclick = newList;
-//document.getElementById("sort-order")!.onclick = toggleAscendingSort;
+document.getElementById("sort-order")!.onclick = toggleAscendingSort;
 
 var sortOrder = 1;
 var tagsDictionary: {[key: string]: number} = {} // keeps track of how many times this tag was used
@@ -27,9 +27,35 @@ var madeChange = false;
 
 var allItemElements: {[key: string]: HTMLElement} = {} // match all html elements to an ID
 
-function saveChanges() {
-    clientList.pushAllChanges()
-}
+//*
+//* START GLOBAL EVENTS:
+//*
+
+document.onkeydown = function(event) {
+    var source = event.target as HTMLElement;
+    if (event.key == "Enter" || event.key == "Escape") {
+        if (source.className === 'editable') {
+            getParentItem(source).focus();
+        } else if (source.className != 'item-notes'){
+            escapePress();
+        }
+        return;
+    }
+    var exclude = ['input', 'textarea'];
+    if (exclude.indexOf(source.tagName.toLowerCase()) === -1) {
+        if (isTypableKey(event.key)) { // start typing in the searchbar if its a letter
+            focusSearch();
+        } else if (event.key == "Backspace") { // if you want the backspace button to clear search
+            focusSearch();
+            updateSearch();
+        }
+    }
+};
+
+//*
+//* END GLOBAL EVENTS
+//*
+
 
 function updateSearch() {
     var searched: string | null = searchbar.value;
@@ -159,32 +185,23 @@ function updateImage(theItemImage:HTMLElement, url:string) {
     theItemImage.style.backgroundPosition = "center";
 }
 
-/**
- * Displays list items as elements
- * @param listData 
- */
-export function displayListItems(listData:clientList.listItem[]) {
-    removeAllItems()
-    let itemCount = document.querySelectorAll('#list-items .item').length + 1;
-    for(let i = 0; i < listData.length; i++) {
-        displayListItem(listData[i], itemCount+i);
-    }
-    sort_all();
-}
-function displayListItem(itemData:clientList.listItem, itemID:number) {
+function displayListItem(itemData:ClientList.listItem, visualID:number) {
     var original = document.getElementById('placeholder-item');
     if (original == null) return;
     var clone = original.cloneNode(true) as HTMLElement; // "deep" clone
     clone.id = '';
     clone.classList.remove("placeholder");
     // set all of these clones child divs to use the listItem information
-    clone.getElementsByClassName("item-id")[0].innerHTML = itemID.toString() || document.querySelectorAll('#list-items .item').length.toString(); // if an id is passed in use that (might be unnessecary if the selector is efficient)
+    clone.getElementsByClassName("item-id")[0].innerHTML = visualID.toString() || document.querySelectorAll('#list-items .item').length.toString(); // if an id is passed in use that (might be unnessecary if the selector is efficient)
     clone.getElementsByClassName("item-title")[0].innerHTML = itemData.title || "";
     clone.getElementsByClassName("item-tags")[0].innerHTML = (itemData.tags || "");
     addTags((itemData.tags || "").split(" "));
-    clone.getElementsByClassName("item-rating")[0].innerHTML = (itemData.rating || "").toString();
+    clone.getElementsByClassName("item-rating")[0].innerHTML = (itemData.rating || "0").toString();
     clone.getElementsByClassName("item-notes")[0].innerHTML = itemData.notes || "";
-    clone.getElementsByClassName("item-date")[0].innerHTML = (itemData.date || "").toString()
+    clone.getElementsByClassName("item-date")[0].innerHTML = (new Date(itemData.date!).toDateString().replace(/^\S+\s/,'') || getNewDate()).toString()
+    clone.dataset.dbid = itemData.itemID.toString();
+    addItemEvents(clone);
+
     if (itemData.imageURL) { // if it has a unique image url, make sure to update it
         updateImage(clone.querySelectorAll(".item-image div")[0] as HTMLElement, itemData.imageURL)
     }
@@ -198,7 +215,6 @@ function displayListItem(itemData:clientList.listItem, itemID:number) {
  * @returns  
  */
 function newItem() {
-    console.log("thigs working");
     if (hasNewItem) {console.log("there is already an unsubmitted new Item");return}; // dont make a second new item
     hasNewItem = true;
     var original = document.getElementById('placeholder-item') as HTMLElement;
@@ -206,14 +222,28 @@ function newItem() {
     var clone = original.cloneNode(true) as HTMLElement; // "deep" clone
     clone.classList.remove("placeholder");
     clone.id = '';
-    //! clone.dataset.value = "new"; // SET THIS TAG SO THINGS READING IT CAN ACT ON IT
+    clone.dataset.value = "new"; //! SET THIS TAG SO THINGS READING IT CAN ACT ON IT
+    clone.dataset.dbid = "";
     clone.getElementsByClassName("item-date")[0].innerHTML = (new Date()).toDateString().replace(/^\S+\s/,'')
     addItemEvents(clone);
     parentOfList.insertBefore(clone, parentOfList.firstChild); // place this new element at the top.
     editTitle(clone);
     addSubmitButton(clone);
+
 }
 
+function toggleAscendingSort() {
+    //@ts-ignore
+    var toggleElem = this; // 'this' is defined by an onclick event call
+    sortOrder = -sortOrder;
+    if (sortOrder == 1) {
+        toggleElem.innerHTML = "▲";
+    } else {
+        toggleElem.innerHTML = "▼";
+    }
+
+    sort_all();
+}
 
 /**
  * When you make a new item, have the id slot be for a submit button
@@ -300,12 +330,22 @@ function toTitleCase(str: string) {
     return str[0].toUpperCase() + str.slice(1);
 }
 
+function getParentItem(subElement: HTMLElement) { // get the item if its a parent of the subElement
+    if (!subElement || subElement.className == 'item') return subElement;
+    return getParentItem(subElement.parentElement!);
+}
+
 /**
  * Functions called after a new Item is added
  * @param anItem This is the item
  */
 function addItemEvents(anItem: HTMLElement) {
-    (anItem.getElementsByClassName("item-notes")[0] as HTMLInputElement).onchange = () => {madeEdit(anItem);}
+
+    (anItem.getElementsByClassName("item-notes")[0] as HTMLInputElement).onchange = (event) => {
+        madeEdit(anItem);
+        var somein = event.target as HTMLInputElement;
+        saveChange({itemID: Number(anItem.dataset.dbid), notes: somein.value});
+    }
     (anItem.getElementsByClassName("delete-item")[0] as HTMLInputElement).addEventListener("click", function(evt) {
         removeItem(anItem); // remove this element if you delete
     });
@@ -319,6 +359,11 @@ function addItemEvents(anItem: HTMLElement) {
     makeEditable(anItem);
 }
 
+function isTypableKey(key: string) {
+    if (key.length > 1) return false;
+    return (key >= 'A' && key <= 'Z') || (key >= 'a' && key <= 'z') || key == '#' || (key >= '0' && key <= '9');
+}
+
 
 /**
  * Makes an Item editable, adding double click items
@@ -328,52 +373,65 @@ function makeEditable(item: HTMLElement) {
 
     var elementsList = ["title","tags","rating","date"];
 
-    elementsList.forEach(element => {
-        (item.getElementsByClassName(`item-${element}`)[0] as HTMLElement).ondblclick=function(){
+    elementsList.forEach(editedPortion => {
+        (item.getElementsByClassName(`item-${editedPortion}`)[0] as HTMLElement).ondblclick=function(){
             var thisElem = (this as HTMLElement)
             if (thisElem.childElementCount > 0) return;
             
             var val=thisElem.innerHTML;
             var input=document.createElement("input");
-            input.value=val;
-            input.alt = val;
+            input.value=val; // to be - new value
+            input.dataset.alt = val; // old value
             input.className = 'editable';
-            switch (element) {
+            switch (editedPortion) {
                 case "title":
                     input.onblur=function(){
-                        var val=thisElem.dataset.value;
-                        (thisElem.parentNode! as HTMLElement).innerHTML=toTitleCase(val!);
-                        if (thisElem.dataset.alt != val)
+                        var newInput = (this as HTMLInputElement)
+                        console.log("THE ELEM IS: " + newInput.value)
+                        var newTitle=toTitleCase(newInput.value);
+                        (newInput.parentNode! as HTMLElement).innerHTML=newTitle;
+                        if (newInput.dataset.alt != newTitle) {
                             madeEdit(item);
+                            saveChange({itemID: Number(item.dataset.dbid), title: newTitle})
+                        }
                     }
                     break;
                 case "tags":
                     input.onblur = function() {
-                        var val = thisElem.dataset.value;
-                        (thisElem.parentNode! as HTMLElement).innerHTML = val!;
-                        if (thisElem.dataset.alt != val)
+                        var newInput = (this as HTMLInputElement)
+                        var newTags = newInput.value;
+                        (newInput.parentNode! as HTMLElement).innerHTML = newTags!;
+                        if (newInput.dataset.alt != newTags) {
                             madeEdit(item);
+                            saveChange({itemID: Number(item.dataset.dbid), tags: newTags})
+                        }
                     }
                     break;
                 case "rating":
                     input.style.width = "40px";
                     input.type = "number";
                     input.onblur = function() {
-                        var val = Number(thisElem.dataset.value);
-                        val = val! > 10 ? 10 : val;
-                        val = val! < 0  ? 0 : val;
-                        (thisElem.parentNode! as HTMLElement).innerHTML = val.toString(); // = val | "0"; no idea why this works, but it truncates the 0s
-                        if (Number(thisElem.dataset.alt) != val)
+                        var newInput = (this as HTMLInputElement)
+                        var newRating = Number(newInput.value);
+                        newRating = newRating! > 10 ? 10 : newRating;
+                        newRating = newRating! < 0  ? 0 : newRating;
+                        (newInput.parentNode! as HTMLElement).innerHTML = newRating.toString(); // = val | "0"; no idea why this works, but it truncates the 0s
+                        if (Number(newInput.dataset.alt) != newRating) {
                             madeEdit(item);
+                            saveChange({itemID: Number(item.dataset.dbid), rating: newRating});
+                        }
                     }
                     break;
                 case "date":
                     input.onblur = function() {
-                        var val = thisElem.dataset.value;
-                        val = isValidDate(val!) ? new Date(val!).toDateString().replace(/^\S+\s/,'') : new Date().toDateString().replace(/^\S+\s/,'');
-                        (thisElem.parentNode! as HTMLElement).innerHTML = val; // TODO: ternery current date
-                        if (thisElem.dataset.alt != val)
+                        var newInput = (this as HTMLInputElement)
+                        var newDate = newInput.value;
+                        newDate = isValidDate(newDate!) ? new Date(newDate!).toDateString().replace(/^\S+\s/,'') : getNewDate();
+                        (newInput.parentNode! as HTMLElement).innerHTML = newDate; // TODO: ternery current date
+                        if (newInput.dataset.alt != newDate) {
                             madeEdit(item);
+                            saveChange({itemID: Number(item.dataset.dbid), date: newDate});
+                        }
                     }
                     break;
             }
@@ -382,6 +440,9 @@ function makeEditable(item: HTMLElement) {
             input.focus();
         }
     });
+}
+function getNewDate() {
+    return new Date().toDateString().replace(/^\S+\s/,'');
 }
 
 /**
@@ -412,4 +473,74 @@ function removeItem(anItem: HTMLElement) {
     if (anItem.dataset.value == "new") hasNewItem = false;
     anItem.remove();
     sort_all();
+}
+
+//* Interact with the client backend (events and other)
+
+/**
+ * FROM, Displays list items as elements
+ * @param listData 
+ */
+export function displayList(listData:ClientList.listItem[]) {
+    removeAllItems()
+    let itemCount = document.querySelectorAll('#list-items .item').length + 1;
+    for(let i = 0; i < listData.length; i++) {
+        displayListItem(listData[i], itemCount+i);
+    }
+    sort_all();
+}
+
+/**
+ * FROM, Use the List in the UI
+ */
+export function displayAvailableLists(allLists: ClientList.listDef[]) {
+
+}
+
+/**
+ * FROM, Use a change for the UI
+ * @param changeData 
+ */
+export function displayItemChange(changeData: ClientList.listItem) {
+
+}
+
+/**
+ * TO, Update a change for the server to use if you save
+ * @param changeData 
+ */
+function saveChange(changeData: ClientList.listItem) {
+
+    ClientList.addChange(changeData);
+}
+
+/**
+ * TO, When you want to create a new item for this list
+ * @returns new item 
+ */
+function requestNewItem(): ClientList.listItem {
+    return ClientList.requestNewListItem();
+}
+
+/**
+ * TO, Open a list
+ * @param listDef 
+ */
+function openList(listDef: ClientList.listDef) {
+    ClientList.requestOpenList(listDef.owner, listDef.listname);
+}
+
+/**
+ * TO, Create and start editing a new list by this name (if you dont save any changes the list wont be created/saved on the server)
+ * @param listname name of the new list to create
+ */
+function openNewList(listname: string) {
+    ClientList.createNewList(listname);
+}
+
+/**
+ * TO, Save all Changes gathered so far
+ */
+function saveAllChanges() {
+    ClientList.pushAllChanges();
 }
