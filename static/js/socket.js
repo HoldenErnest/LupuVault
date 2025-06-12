@@ -1,6 +1,6 @@
 // Holden Ernest - 5/20/2025
 // Controls the interaction socket between the clients and the server
-import { updateWithNewItem } from './clientList.js';
+import { pushNotification, updateWithNewItem } from './clientList.js';
 const socket = io();
 socket.on("connect", () => {
     console.log("connected");
@@ -24,9 +24,13 @@ export function sendListItemToServer(item) {
     console.log("sending to server: ", item);
     socket.emit('save-listItem', item);
 }
-socket.on('update-listItem', (item) => {
-    console.log("recieving updated item! " + item);
-    updateWithNewItem(item["item"]);
+socket.on('update-listItem', (recieved) => {
+    console.log("recieving updated item! " + recieved);
+    updateWithNewItem(recieved["item"]);
+});
+socket.on('push-noti', (notification) => {
+    console.log("recieving notification " + notification);
+    pushNotification(notification);
 });
 function joinGroup() {
     console.log("joining group");

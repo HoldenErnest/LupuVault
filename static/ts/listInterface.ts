@@ -223,7 +223,8 @@ function newItem() {
     clone.classList.remove("placeholder");
     clone.id = '';
     clone.dataset.value = "new"; //! SET THIS TAG SO THINGS READING IT CAN ACT ON IT
-    clone.dataset.dbid = "";
+    clone.dataset.dbid = requestNewItem().itemID.toString();
+    console.log("NEW ITEM ID: " + clone.dataset.dbid);
     clone.getElementsByClassName("item-date")[0].innerHTML = (new Date()).toDateString().replace(/^\S+\s/,'')
     addItemEvents(clone);
     parentOfList.insertBefore(clone, parentOfList.firstChild); // place this new element at the top.
@@ -510,7 +511,6 @@ export function displayItemChange(changeData: ClientList.listItem) {
  * @param changeData 
  */
 function saveChange(changeData: ClientList.listItem) {
-
     ClientList.addChange(changeData);
 }
 
@@ -542,5 +542,6 @@ function openNewList(listname: string) {
  * TO, Save all Changes gathered so far
  */
 function saveAllChanges() {
+    madeChange = false;
     ClientList.pushAllChanges();
 }

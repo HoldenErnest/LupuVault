@@ -31,6 +31,10 @@ export type listDef = {
     "owner": string,
     "listname": string,
 }
+export type notificaiton = {
+    "status": "good" | "bad" | "warning",
+    "message": string,
+}
 
 init()
 
@@ -135,9 +139,6 @@ function mergeItems(oldItem: listItem, newValues: listItem): listItem {
  * @param item the list item with the changes
  */
 export function updateWithNewItem(item: listItem) {
-    //TODO: make this not so bad (CHANGE ONLY THIS ITEM, DONT REMOVE ALL)
-    ////allItems[item.itemID.toString()] = item;
-    ////updateUIFromDict()
     UI.displayItemChange(item);
 }
 function setupListDict(list: listItem[]) {
@@ -148,6 +149,10 @@ function setupListDict(list: listItem[]) {
 }
 function updateUIFromDict() {
     UI.displayList(Object.values(allItems))
+}
+
+export function pushNotification(noti: notificaiton) {
+    displayNotification(noti.status, noti.message)
 }
 
 /**

@@ -98,9 +98,6 @@ function mergeItems(oldItem, newValues) {
  * @param item the list item with the changes
  */
 export function updateWithNewItem(item) {
-    //TODO: make this not so bad (CHANGE ONLY THIS ITEM, DONT REMOVE ALL)
-    ////allItems[item.itemID.toString()] = item;
-    ////updateUIFromDict()
     UI.displayItemChange(item);
 }
 function setupListDict(list) {
@@ -111,6 +108,9 @@ function setupListDict(list) {
 }
 function updateUIFromDict() {
     UI.displayList(Object.values(allItems));
+}
+export function pushNotification(noti) {
+    displayNotification(noti.status, noti.message);
 }
 /**
  * Saves the given list item to the server.

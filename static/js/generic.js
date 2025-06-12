@@ -30,6 +30,7 @@ function newNotificationItem(type, message) {
     var clone = original.cloneNode(true); // "deep" clone
     clone.classList.remove("placeholder");
     clone.classList.add(type);
+    clone.classList.add("notification");
     clone.id = '';
     clone.innerHTML = message;
     var notiDiv = document.getElementById('notification-area');

@@ -29,7 +29,6 @@ app.config["SESSION_PERMANENT"] = True
 
 socketio = SocketIO(app)
 
-
 import socketEvents # make sure the script is loaded to recieve the events
 
 database.setG(g)

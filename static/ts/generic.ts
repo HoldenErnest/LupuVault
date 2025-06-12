@@ -32,6 +32,7 @@ function newNotificationItem(type:string, message:string): HTMLElement | undefin
     var clone = original.cloneNode(true) as HTMLElement; // "deep" clone
     clone.classList.remove("placeholder");
     clone.classList.add(type);
+    clone.classList.add("notification");
     clone.id = '';
     clone.innerHTML = message;
     var notiDiv = document.getElementById('notification-area') as HTMLElement;

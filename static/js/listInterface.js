@@ -219,7 +219,8 @@ function newItem() {
     clone.classList.remove("placeholder");
     clone.id = '';
     clone.dataset.value = "new"; //! SET THIS TAG SO THINGS READING IT CAN ACT ON IT
-    clone.dataset.dbid = "";
+    clone.dataset.dbid = requestNewItem().itemID.toString();
+    console.log("NEW ITEM ID: " + clone.dataset.dbid);
     clone.getElementsByClassName("item-date")[0].innerHTML = (new Date()).toDateString().replace(/^\S+\s/, '');
     addItemEvents(clone);
     parentOfList.insertBefore(clone, parentOfList.firstChild); // place this new element at the top.
@@ -374,7 +375,6 @@ function makeEditable(item) {
                         var newTitle = toTitleCase(newInput.value);
                         newInput.parentNode.innerHTML = newTitle;
                         if (newInput.dataset.alt != newTitle) {
-                            console.log(newInput.dataset.alt + " VS " + newTitle);
                             madeEdit(item);
                             saveChange({ itemID: Number(item.dataset.dbid), title: newTitle });
                         }
@@ -516,5 +516,6 @@ function openNewList(listname) {
  * TO, Save all Changes gathered so far
  */
 function saveAllChanges() {
+    madeChange = false;
     ClientList.pushAllChanges();
 }
