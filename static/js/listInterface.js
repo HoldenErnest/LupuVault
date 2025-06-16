@@ -219,8 +219,9 @@ function newItem() {
     clone.id = '';
     clone.dataset.value = "new"; //! SET THIS TAG SO THINGS READING IT CAN ACT ON IT
     clone.dataset.dbid = requestNewItem().itemID.toString();
-    console.log("NEW ITEM ID: " + clone.dataset.dbid);
-    clone.getElementsByClassName("item-date")[0].innerHTML = (new Date()).toDateString().replace(/^\S+\s/, '');
+    var newDate = (new Date()).toDateString().replace(/^\S+\s/, '');
+    clone.getElementsByClassName("item-date")[0].innerHTML = newDate;
+    saveChange({ itemID: Number(clone.dataset.dbid), date: newDate });
     addItemEvents(clone);
     parentOfList.insertBefore(clone, parentOfList.firstChild); // place this new element at the top.
     editTitle(clone);
@@ -507,12 +508,14 @@ export function displayItemChange(changeData) {
     //find item to change (dataset.bdid)
     var theElement = findElementByDBID(changeData.itemID);
     if (!theElement) {
-        //TODO: CREATE ELEM if there isnt already an id
-        displayNotification("error", "failed to match ITEM");
-        return;
+        // create an element if there isnt one with that id
+        let itemCount = document.querySelectorAll('#list-items .item').length + 1;
+        displayListItem(changeData, itemCount);
     }
-    //update values
-    updateValuesFromChange(theElement, changeData);
+    else {
+        //update values
+        updateValuesFromChange(theElement, changeData);
+    }
     //sort?
     sort_all();
 }

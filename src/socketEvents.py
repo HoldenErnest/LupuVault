@@ -52,4 +52,4 @@ def register_events(socketio, getCurList, getUsername, join_room, leave_room, em
             socketio.emit('update-listItem', {'item': listItem}, room=getRoomCode(), include_self=False)
             #package listItem into an object in case you want to read other info like status.
         else:
-            socketio.emit('push-noti', {'status': 'error', 'message': "Save failed.."})
+            emit('push-noti', {'status': 'error', 'message': "Save failed.."})
