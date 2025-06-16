@@ -522,7 +522,9 @@ export function displayItemChange(changeData) {
 }
 export function removeByID(id) {
     var theElement = findElementByDBID(id);
+    console.log("removing item: " + theElement);
     theElement.remove();
+    console.log("removed the: " + theElement);
     sort_all();
 }
 /**

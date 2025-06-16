@@ -34,9 +34,19 @@ def register_events(socketio, getCurList, getUsername, join_room, leave_room, em
         return "\n~" + currentList[1] + "~\n~" + currentList[0] + "~\n"
 
 
+    @socketio.on('remove-listItem')
+    def removeListItem(listItem):
+        didRemove = database.removeListItem(getUsername(), listItem)
+        if (didRemove):
+            emit('push-noti', {'status': 'success', 'message': "Saved list.."})
+            socketio.emit('update-remove', {'item': listItem}, room=getRoomCode(), include_self=False)
+        else:
+            emit('push-noti', {'status': 'error', 'message': "Failed Removing Item.."})
+
+
+
     @socketio.on('save-listItem')
     def sendListItem(listItem):
-        print("saving list Item")
         # You cant trust the client, ensure the sessioned user has access to this list
         createdItem = database.updateListItem(getUsername(), listItem)
 

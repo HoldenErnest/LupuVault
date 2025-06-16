@@ -1,7 +1,7 @@
 // Holden Ernest - 5/20/2025
 // Controls the interaction socket between the clients and the server
 
-import { listItem, listItemExtended, notificaiton, pushNotification, updateWithNewItem } from './clientList.js';
+import { listItem, listItemExtended, notificaiton, pushNotification, updateRemovedItem, updateWithNewItem } from './clientList.js';
 
 
 declare const io: any;  // This tells TypeScript that 'io' exists globally
@@ -27,14 +27,20 @@ socket.on("disconnect", () => {
 });
 
 export function sendListItemToServer(item: listItemExtended): void {
-    console.log("sending to server: ", item);
     socket.emit('save-listItem', item);
 }
+export function removeItemFromServer(item: listItemExtended): void {
+    console.log("SENDING: remove item")
+    socket.emit('remove-listItem', item);
+}
 
-socket.on('update-listItem', (recieved: {[keys: string]: listItem}) => {
-    console.log("recieving updated item! " + recieved)
+socket.on('update-listItem', (recieved: {[keys: string]: listItemExtended}) => {
     updateWithNewItem(recieved["item"])
+});
 
+socket.on('update-remove', (recieved: {[keys: string]: listItemExtended}) => {
+    console.log("trying to remove an item from web")
+    updateRemovedItem(recieved["item"])
 });
 
 socket.on('push-noti', (notification: notificaiton) => {

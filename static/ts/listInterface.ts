@@ -545,7 +545,9 @@ export function displayItemChange(changeData: ClientList.listItem) {
 
 export function removeByID(id: number) {
     var theElement = findElementByDBID(id);
+    console.log("removing item: " + theElement);
     theElement.remove();
+    console.log("removed the: " + theElement)
     sort_all();
 }
 

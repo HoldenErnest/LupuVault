@@ -98,7 +98,14 @@ function mergeItems(oldItem, newValues) {
  * @param item the list item with the changes
  */
 export function updateWithNewItem(item) {
+    if (item.listname != currentListName || item.owner != currentListOwner)
+        return;
     UI.displayItemChange(item);
+}
+export function updateRemovedItem(item) {
+    if (item.listname != currentListName || item.owner != currentListOwner)
+        return;
+    UI.removeByID(item.itemID);
 }
 function setupListDict(list) {
     allItems = {};
@@ -121,6 +128,12 @@ export function pushListItem(item) {
     exportItem.listname = currentListName;
     if (exportItem.date)
         exportItem.date = toDateTime(new Date(exportItem.date));
+    if (Object.keys(item).length == 3) { // REMOVE // owner, listname, id
+        if (item.itemID < 0)
+            return; // ignore this if youre removing a new item
+        socket.removeItemFromServer(exportItem);
+        return;
+    }
     // before sending new items (-id), remove them from the UI
     if (item.itemID < 0)
         UI.removeByID(item.itemID);

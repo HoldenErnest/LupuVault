@@ -3,6 +3,7 @@
 
 import os
 import hashlib
+import time
 import uuid
 import mysql.connector.pooling
 from pathlib import Path
@@ -37,21 +38,32 @@ def _get_db():
         g.db = connection_pool.get_connection()
     return g.db
 
+def _get_db_with_timeout(timeout=5):
+    start = time.time()
+    while True:
+        try:
+            return _get_db()
+        except mysql.connector.errors.PoolError:
+            if time.time() - start >= timeout:
+                raise TimeoutError("Could not get a connection from the pool within timeout.")
+            time.sleep(0.1)
+
 def close_db(error):
     db = g.pop('db', None)
-    if db is not None:
+    if not db is None:
         db.close()
 
 def _tryInsert(sql, vals):
     """Build all SQL inserts through this"""
     try:
-        conn = _get_db()
+        conn = _get_db_with_timeout()
         cursor = conn.cursor()
         print("INSERTING OR SOMETHING: ", sql, vals)
         cursor.execute(sql, vals)
         conn.commit()
         cursor.close()
         if (sql.startswith("INSERT INTO listData")):
+            # if you ever try to insert a new id, grab the unique id used so you can see it on the frontend
             return _trySelect("SELECT LAST_INSERT_ID();", ())
         else:
             return True
@@ -63,7 +75,7 @@ def _tryInsert(sql, vals):
 def _trySelect(sql, vals, getCursor=False):
     """Build all SQL selects through this"""
     try:
-        conn = _get_db()
+        conn = _get_db_with_timeout()
         cursor = conn.cursor()
         cursor.execute(sql, vals)
         res = cursor.fetchall()
@@ -179,6 +191,18 @@ def updateListItem(connectedUser, listItem):
 
     (sql, vals) = getQueryFromListItem(listItem)
     return _tryInsert(sql, vals)
+
+def removeListItem(connectedUser, listItem):
+    """ List Items without any extra params (only listname, owner, and id) are removed"""
+    owner = listItem["owner"]
+    listname = listItem["listname"]
+    itemID = listItem["itemID"]
+
+    sql = "DELETE FROM listData WHERE owner = %s AND listname = %s AND itemID = %s"
+    vals = (owner, listname, itemID)
+    res = _tryInsert(sql, vals)
+    return res
+
 
 def getQueryFromListItem(listItem):
     """Returns a usable query for mysql which allows ommiting certain fields"""
