@@ -218,7 +218,7 @@ def newUserPost(key):
     
     return redirect("/login")
 
-socketEvents.register_events(socketio, getCurList, getUsername, join_room, leave_room)
+socketEvents.register_events(socketio, getCurList, getUsername, join_room, leave_room, emit)
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@
 #from flask_socketio import join_room, leave_room #
 import database
 
-def register_events(socketio, getCurList, getUsername, join_room, leave_room):
+def register_events(socketio, getCurList, getUsername, join_room, leave_room, emit):
 
     @socketio.on('connect')
     def handle_connect():
@@ -41,7 +41,7 @@ def register_events(socketio, getCurList, getUsername, join_room, leave_room):
         createdItem = database.updateListItem(getUsername(), listItem)
 
         if (createdItem):
-            socketio.emit('push-noti', {'status': 'success', 'message': "Saved list.."})
+            emit('push-noti', {'status': 'success', 'message': "Saved list.."})
             
             # only emmit to everyone if the changes are in place.
             if (isinstance(createdItem, list)):

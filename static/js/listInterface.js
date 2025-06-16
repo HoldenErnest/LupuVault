@@ -20,7 +20,6 @@ var sortOrder = 1;
 var tagsDictionary = {}; // keeps track of how many times this tag was used
 var hasNewItem = false;
 var madeChange = false;
-var allItemElements = {}; // match all html elements to an ID
 //*
 //* START GLOBAL EVENTS:
 //*
@@ -302,13 +301,13 @@ function editTitle(anItem) {
     input.dataset.value = val;
     input.className = 'editable';
     input.onblur = function () {
-        var val = this.dataset.value;
-        theTitle.innerHTML = toTitleCase(val);
-        /*
-        madeEdit(anItem);
-        sort_all();
-        escapePress();
-        */
+        var newInput = this;
+        var newTitle = toTitleCase(newInput.value);
+        newInput.parentNode.innerHTML = newTitle;
+        if (newInput.dataset.alt != newTitle) {
+            madeEdit(anItem);
+            saveChange({ itemID: Number(anItem.dataset.dbid), title: newTitle });
+        }
     };
     theTitle.innerHTML = "";
     theTitle.appendChild(input);
@@ -371,7 +370,6 @@ function makeEditable(item) {
                 case "title":
                     input.onblur = function () {
                         var newInput = this;
-                        console.log("THE ELEM IS: " + newInput.value);
                         var newTitle = toTitleCase(newInput.value);
                         newInput.parentNode.innerHTML = newTitle;
                         if (newInput.dataset.alt != newTitle) {
@@ -460,6 +458,29 @@ function removeItem(anItem) {
     anItem.remove();
     sort_all();
 }
+function findElementByDBID(dbid) {
+    var theElement = parentOfList.querySelector(`.item[data-dbid=\"${dbid}\"]`);
+    return theElement;
+}
+/**
+ * Update all HTML values based on a change object
+ * @param change
+ */
+function updateValuesFromChange(elem, change) {
+    console.log("CHANGE: " + change.notes || "");
+    if (change.title)
+        elem.getElementsByClassName("item-title")[0].innerHTML = change.title;
+    if (change.tags) {
+        elem.getElementsByClassName("item-tags")[0].innerHTML = change.tags;
+        addTags((change.tags || "").split(" "));
+    }
+    if (change.rating)
+        elem.getElementsByClassName("item-rating")[0].innerHTML = change.rating.toString();
+    if (change.notes)
+        elem.getElementsByClassName("item-notes")[0].value = change.notes;
+    if (change.date)
+        elem.getElementsByClassName("item-date")[0].innerHTML = new Date(change.date).toDateString().replace(/^\S+\s/, '');
+}
 //* Interact with the client backend (events and other)
 /**
  * FROM, Displays list items as elements
@@ -483,6 +504,17 @@ export function displayAvailableLists(allLists) {
  * @param changeData
  */
 export function displayItemChange(changeData) {
+    //find item to change (dataset.bdid)
+    var theElement = findElementByDBID(changeData.itemID);
+    if (!theElement) {
+        //TODO: CREATE ELEM if there isnt already an id
+        displayNotification("error", "failed to match ITEM");
+        return;
+    }
+    //update values
+    updateValuesFromChange(theElement, changeData);
+    //sort?
+    sort_all();
 }
 /**
  * TO, Update a change for the server to use if you save
