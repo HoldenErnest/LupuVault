@@ -471,6 +471,7 @@ function requestImageUrl(anItem: HTMLElement, urlNum: number) {
 function removeItem(anItem: HTMLElement) {
     madeEdit(anItem);
     if (anItem.dataset.value == "new") hasNewItem = false;
+    saveRemove(Number(anItem.dataset.dbid!))
     anItem.remove();
     sort_all();
 }
@@ -542,12 +543,22 @@ export function displayItemChange(changeData: ClientList.listItem) {
     sort_all();
 }
 
+export function removeByID(id: number) {
+    var theElement = findElementByDBID(id);
+    theElement.remove();
+    sort_all();
+}
+
 /**
  * TO, Update a change for the server to use if you save
  * @param changeData 
  */
 function saveChange(changeData: ClientList.listItem) {
     ClientList.addChange(changeData);
+}
+
+function saveRemove(id: number) {
+    ClientList.addChange({itemID: id});
 }
 
 /**

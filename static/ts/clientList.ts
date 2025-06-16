@@ -159,14 +159,14 @@ export function pushNotification(noti: notificaiton) {
  * Saves the given list item to the server.
  */
 export function pushListItem(item: listItem) {
-    //* before you send any new items (these are items with a negative ID):
-    //TODO: if (-id) Tell the listInterface to delete this item.
     var exportItem: listItemExtended = item as listItemExtended
     exportItem.owner = currentListOwner;
     exportItem.listname = currentListName;
     if (exportItem.date)
         exportItem.date = toDateTime(new Date(exportItem.date!));
-    //TODO: if (-id): remove the id completely
+    // before sending new items (-id), remove them from the UI
+    if (item.itemID < 0)
+        UI.removeByID(item.itemID);
     socket.sendListItemToServer(exportItem)
 }
 

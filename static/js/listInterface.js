@@ -456,6 +456,7 @@ function removeItem(anItem) {
     madeEdit(anItem);
     if (anItem.dataset.value == "new")
         hasNewItem = false;
+    saveRemove(Number(anItem.dataset.dbid));
     anItem.remove();
     sort_all();
 }
@@ -519,12 +520,20 @@ export function displayItemChange(changeData) {
     //sort?
     sort_all();
 }
+export function removeByID(id) {
+    var theElement = findElementByDBID(id);
+    theElement.remove();
+    sort_all();
+}
 /**
  * TO, Update a change for the server to use if you save
  * @param changeData
  */
 function saveChange(changeData) {
     ClientList.addChange(changeData);
+}
+function saveRemove(id) {
+    ClientList.addChange({ itemID: id });
 }
 /**
  * TO, When you want to create a new item for this list

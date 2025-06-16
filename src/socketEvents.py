@@ -45,11 +45,11 @@ def register_events(socketio, getCurList, getUsername, join_room, leave_room, em
             
             # only emmit to everyone if the changes are in place.
             if (isinstance(createdItem, list)):
-                # if this is a new item, make sure to grab its id to send to anyone else on the socket
+                # if this is a new item, make sure to grab its id to send to everyone on the socket (including yourself to update ID)
                 listItem["itemID"] = createdItem[0][0]
-                print(createdItem, " is the item")
-            print ("sending", listItem)
-            socketio.emit('update-listItem', {'item': listItem}, room=getRoomCode(), include_self=False)
+                socketio.emit('update-listItem', {'item': listItem}, room=getRoomCode(), include_self=True)
+            else:
+                socketio.emit('update-listItem', {'item': listItem}, room=getRoomCode(), include_self=False)
             #package listItem into an object in case you want to read other info like status.
         else:
             emit('push-noti', {'status': 'error', 'message': "Save failed.."})
