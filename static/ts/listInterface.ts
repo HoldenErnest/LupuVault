@@ -8,6 +8,7 @@ const searchbar = document.getElementById("searchbar") as HTMLInputElement;
 const escapeFocusElem = document.getElementById("escape-focus") as HTMLElement;
 const sortBtn = document.getElementById("sort-list") as HTMLSelectElement;
 const parentOfList = document.getElementById('list-items') as HTMLElement;
+const loadingElem = document.getElementById('loader') as HTMLElement;
 
 //Event listeners
 //saveBtn.addEventListener('click', onButtonSave);
@@ -17,13 +18,14 @@ document.getElementById("sort-list")!.onchange = sort_all;
 document.getElementById("sort-order")!.onchange = sort_all;
 document.getElementById("save-btn")!.onclick = saveAllChanges;
 document.getElementById("add-item-btn")!.onclick = newItem;
-//document.getElementById("new-list-button")!.onclick = newList;
+document.getElementById("new-list-button")!.onclick = newList;
 document.getElementById("sort-order")!.onclick = toggleAscendingSort;
 
 var sortOrder = 1;
 var tagsDictionary: {[key: string]: number} = {} // keeps track of how many times this tag was used
 var hasNewItem = false;
 var madeChange = false;
+var warnedNoSave = false; // if you try to leave a list, warn once
 
 
 //*
@@ -481,6 +483,86 @@ function findElementByDBID(dbid: Number): HTMLElement {
     return theElement;
 }
 
+function newList() { // crete a new list based off #new-list-input
+
+    if (madeChange) {
+        if (!warnedNoSave) {
+            warnedNoSave = true;
+            displayNotification("warning","Changes not saved! Press again to discard changes")
+            return;
+        }
+        //if youve already warned them and they decide to discard changes, remove save button
+        hideSaveButton();
+    }
+    warnedNoSave = false;
+
+    var listText = (document.getElementById("new-list-input") as HTMLInputElement).value;
+    listText = toUsableFilename(listText);
+    console.log("creating list " + listText);
+    if (!listNameExists(listText)) {
+        openNewList(listText);
+    }
+    escapePress();
+}
+
+// this function is no longer NEEDED but is useful for keeping the peace
+function toUsableFilename(inputString: string) {
+    return inputString.replace(/[/ \\?%*:|"<>]/g,'-');
+}
+
+function toListDisplayName(listname: string) {
+    //TODO: make this better(or just remove it and put in an image)
+    return listname.slice(0,8);
+}
+
+/**
+ * Creates the HTML elements for each list the user has access to
+ * @param list listDef of list to display
+ * @param isSelected whether this element is the one being used
+ */
+function createListHTML(list: ClientList.listDef, isSelected: boolean) { // A new list display on the sidebar
+    var parentElement = document.getElementById("sidebar") as HTMLElement;
+    var original = document.getElementById("sidebar-list") as HTMLElement;
+    var clone = original.cloneNode(true) as HTMLElement; // "deep" clone
+    clone.classList.remove("placeholder");
+    clone.id = "";
+    clone.innerHTML = toListDisplayName(list.listname);
+    clone.dataset.listname = list.listname;
+    clone.dataset.owner = list.owner;
+    parentElement.insertBefore(clone, parentElement.firstChild);
+
+    //* you can add a right click here
+
+    clone.addEventListener("click", function(evt) {
+        //if the list is already selected dont change anything
+        if (Array.from(this.classList).includes("selected")) return;
+
+        if (madeChange) {
+            if (!warnedNoSave) {
+                warnedNoSave = true;
+                displayNotification("warning","Changes not saved! Press again to discard changes")
+                return;
+            }
+            //if youve already warned them and they decide to discard changes, remove save button
+            hideSaveButton();
+        }
+        warnedNoSave = false;
+
+        removeAllItems();
+        openList({owner: this.dataset.owner!, listname: this.dataset.listname!})
+        setSelectedList(this);
+    });
+    if (isSelected) setSelectedList(clone);
+}
+
+function setSelectedList(list: HTMLElement) { // sets the selected list (not list Item)
+    hasNewItem = false;
+    var parentElement = document.getElementById("sidebar") as HTMLElement;
+    Array.from(parentElement.getElementsByClassName("sidebar-list")).forEach(list => {
+        list.classList.remove("selected"); // remove selected class from all others
+    });
+    list.classList.add("selected"); // set this new list to selected
+}
 
 /**
  * Update all HTML values based on a change object
@@ -520,8 +602,17 @@ export function displayList(listData:ClientList.listItem[]) {
 /**
  * FROM, Use the List in the UI
  */
-export function displayAvailableLists(allLists: ClientList.listDef[]) {
-
+export function displayAvailableLists(allLists: ClientList.listDef[], selectedList: ClientList.listDef) {
+    var parentElement = document.getElementById("sidebar")!;
+    var currentLists = Array.from(parentElement.getElementsByClassName("sidebar-list"));
+    currentLists.forEach(list => { // remove all prev lists
+        if (list.id == "add-list") return;
+        list.remove();
+    });
+    console.log(selectedList.listname + " is selected");
+    allLists.forEach(list => {
+        createListHTML(list, (selectedList.listname == list.listname && selectedList.owner == list.owner));
+    });
 }
 
 /**
@@ -543,12 +634,32 @@ export function displayItemChange(changeData: ClientList.listItem) {
     sort_all();
 }
 
+
+/**
+ * Removes an element by its id
+ * @param id 
+ */
 export function removeByID(id: number) {
     var theElement = findElementByDBID(id);
     console.log("removing item: " + theElement);
     theElement.remove();
     console.log("removed the: " + theElement)
     sort_all();
+}
+
+
+/**
+ * Loading animation
+ */
+export function startLoading() {
+    loadingElem.classList.remove("hidden")
+}
+export function endLoading() {
+    loadingElem.classList.add("hidden")
+}
+
+function listNameExists(listName: string) {
+    return ClientList.listNameExists(listName);
 }
 
 /**

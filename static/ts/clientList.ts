@@ -12,6 +12,8 @@ var changes:{[keys: string]: listItem} = {}
 
 var newItemID = -1; // give a temporary identification to each new item.
 
+var allLists: listDef[] = []
+
 var allItems:{[keys: string]: listItem} = {} //TODO: remove this? not needed
 
 export type listItem = {
@@ -50,9 +52,9 @@ async function init() {
  */
 export async function requestOpenList(user: string, listname: string) {
     console.log("OPENING: lists/" + user + "/" + listname);
-    //TODO: start loading ". . ." animation
+    UI.startLoading()
     var listItems = await downloadAPI("lists/" + user + "/" + listname) as listItemExtended[];
-    //TODO: end loading animation
+    UI.endLoading()
     var listData: listItem[] = listItems as listItem[];
     openList(user, listname, listData);
 }
@@ -70,14 +72,14 @@ function openList(owner: string, listname: string, listData: listItem[]) {
 
 async function requestAllAccessableLists() {
     var listPacked = await downloadAPI("lists") as string[][];
-    var allLists: listDef[] = []
     listPacked.forEach(listInfo => {
         allLists.push({
-            "owner": listInfo[0],
-            "listname": listInfo[1],
+            "owner": listInfo[1],
+            "listname": listInfo[0],
         })
     });
-    UI.displayAvailableLists(allLists);
+    console.log("current list:: " + currentListName);
+    UI.displayAvailableLists(allLists, getCurrentListDef());
 }
 
 /**
@@ -85,6 +87,16 @@ async function requestAllAccessableLists() {
  */
 export function createNewList(listname: string): any {
     openList(whoAmI, listname, [])
+    allLists.push({owner: whoAmI, listname: listname});
+    UI.displayAvailableLists(allLists, getCurrentListDef());
+}
+
+export function listNameExists(listname: string): boolean {
+    for (var listInfo of allLists){
+        console.log(listInfo.listname + "=?" + listname)
+        if (listname == listInfo.listname && listInfo.owner == whoAmI) return true;
+    }
+    return false;
 }
 
 async function downloadAPI(path: string): Promise<listItemExtended[] | string[][]> {
@@ -197,4 +209,8 @@ function clearAllChanges() {
 
 function toDateTime(date: Date) {
     return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+
+function getCurrentListDef(): listDef {
+    return {owner: currentListOwner, listname: currentListName}
 }

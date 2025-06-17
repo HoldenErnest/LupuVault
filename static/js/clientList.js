@@ -7,6 +7,7 @@ var currentListName = document.getElementById("initListList").value;
 var currentListOwner = document.getElementById("initListUser").value;
 var changes = {};
 var newItemID = -1; // give a temporary identification to each new item.
+var allLists = [];
 var allItems = {}; //TODO: remove this? not needed
 init();
 async function init() {
@@ -19,9 +20,9 @@ async function init() {
  */
 export async function requestOpenList(user, listname) {
     console.log("OPENING: lists/" + user + "/" + listname);
-    //TODO: start loading ". . ." animation
+    UI.startLoading();
     var listItems = await downloadAPI("lists/" + user + "/" + listname);
-    //TODO: end loading animation
+    UI.endLoading();
     var listData = listItems;
     openList(user, listname, listData);
 }
@@ -37,20 +38,30 @@ function openList(owner, listname, listData) {
 }
 async function requestAllAccessableLists() {
     var listPacked = await downloadAPI("lists");
-    var allLists = [];
     listPacked.forEach(listInfo => {
         allLists.push({
-            "owner": listInfo[0],
-            "listname": listInfo[1],
+            "owner": listInfo[1],
+            "listname": listInfo[0],
         });
     });
-    UI.displayAvailableLists(allLists);
+    console.log("current list:: " + currentListName);
+    UI.displayAvailableLists(allLists, getCurrentListDef());
 }
 /**
  * Virtually creates a new list (any future saves will be sent as this new list)
  */
 export function createNewList(listname) {
     openList(whoAmI, listname, []);
+    allLists.push({ owner: whoAmI, listname: listname });
+    UI.displayAvailableLists(allLists, getCurrentListDef());
+}
+export function listNameExists(listname) {
+    for (var listInfo of allLists) {
+        console.log(listInfo.listname + "=?" + listname);
+        if (listname == listInfo.listname && listInfo.owner == whoAmI)
+            return true;
+    }
+    return false;
 }
 async function downloadAPI(path) {
     const url = "/api/" + path;
@@ -153,4 +164,7 @@ function clearAllChanges() {
 }
 function toDateTime(date) {
     return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+function getCurrentListDef() {
+    return { owner: currentListOwner, listname: currentListName };
 }
