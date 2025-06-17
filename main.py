@@ -6,12 +6,14 @@ from flask import *
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
 import os
 import sys
+from google_images_search import GoogleImagesSearch
 
 # src/ MODULES
 sys.path.insert(0, '/home/lupu/LupuVault/src') # this is needed for the dotenv as well.
 import database
 import secretkeys
 import apis
+
 
 # load the .env variables into the environment
 from dotenv import load_dotenv
@@ -21,6 +23,9 @@ load_dotenv()
 import mimetypes
 mimetypes.add_type('application/javascript', '.js')
 mimetypes.add_type('application/typescript', '.ts')
+
+
+gis = GoogleImagesSearch(os.getenv('IMG_API_KEY'), os.getenv('CSE_ID'))
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -146,9 +151,20 @@ def getList(owner, listname):
 @app.route("/api/lists")
 def getAllLists():
     if (not signedIn()):
-        return jsonify([]) #TODO: SETUP ERROR CODES
+        return jsonify([]) #TODO: SETUP ERROR CODES?
     currentUser = getUsername()
     return jsonify(database.getListsInOrder(currentUser))
+
+@app.route("/api/img/<query>")
+def getImgFor(query):
+    if (not signedIn()):
+        return jsonify([])
+    gis.search({'q': query, 'num': 5,})
+    allurls = []
+    for image in gis.results():
+        allurls.append(image.url)
+
+    return allurls
 ### END APIS
 
 @app.route("/login", methods=['get'])

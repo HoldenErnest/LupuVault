@@ -45,6 +45,14 @@ async function init() {
     requestOpenList(currentListOwner, currentListName);
 }
 
+/**
+ * Request an image from the api with the given search
+ * @param imgQuery 
+ */
+export async function requestImage(imgQuery: string) {
+    var urls = await downloadAPI("lists/img/" + imgQuery) as string[];
+    //TODO: send these to the currently selected item
+}
 
 /**
  * Trys open list
@@ -99,7 +107,7 @@ export function listNameExists(listname: string): boolean {
     return false;
 }
 
-async function downloadAPI(path: string): Promise<listItemExtended[] | string[][]> {
+async function downloadAPI(path: string): Promise<listItemExtended[] | string[][] | string[]> {
     const url = "/api/" + path
     try {
         const response = await fetch(url);

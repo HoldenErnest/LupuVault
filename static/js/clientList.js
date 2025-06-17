@@ -15,6 +15,12 @@ async function init() {
     requestOpenList(currentListOwner, currentListName);
 }
 /**
+ * Request an image from the api with the given search
+ * @param imgQuery
+ */
+export async function requestImage(imgQuery) {
+}
+/**
  * Trys open list
  * @param url a link to the json from the API
  */
