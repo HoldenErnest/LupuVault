@@ -59,3 +59,8 @@ CSS:
 5/29/2025
  - Python is weird and runs all scripts instead of a normal "import", this makes it pretty annoying to refrence the main script since it will reset all app config stuff.
  - Instead: try to never circular import, call methods to pass the variables into the script
+
+ 6/17/2025
+ - its been a minute but ive been chipping away at things.
+ - most of the core functionality is in place including list socket communication.
+ - I also added a timeout to my connection pooling and it works pretty well, doesnt matter how many concurent connections there are.

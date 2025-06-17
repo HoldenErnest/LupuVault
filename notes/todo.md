@@ -1,4 +1,5 @@
-Host page /favicon.ico/ so goolge stops whining (make non transparent background for other icons)
+share lists (whole rightclick menu for lists?)
 
-- look into if keeping the sql open for that long is efficient
-- CONT. try instead using a `connection pool` for SQL so the queries dont get scattered
+Image API implementation.
+
+Import from CSV (UI for that? idk)
