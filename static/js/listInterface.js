@@ -573,6 +573,8 @@ function updateValuesFromChange(elem, change) {
         elem.getElementsByClassName("item-notes")[0].value = change.notes;
     if (change.date)
         elem.getElementsByClassName("item-date")[0].innerHTML = new Date(change.date).toDateString().replace(/^\S+\s/, '');
+    if (change.imageURL)
+        updateImage(elem.querySelectorAll(".item-image div")[0], change.imageURL);
 }
 //* Interact with the client backend (events and other)
 /**

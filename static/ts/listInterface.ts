@@ -597,6 +597,8 @@ function updateValuesFromChange(elem: HTMLElement, change: ClientList.listItem) 
         (elem.getElementsByClassName("item-notes")[0] as HTMLInputElement).value = change.notes
     if (change.date)
         elem.getElementsByClassName("item-date")[0].innerHTML = new Date(change.date).toDateString().replace(/^\S+\s/,'')
+    if (change.imageURL)
+        updateImage(elem.querySelectorAll(".item-image div")[0] as HTMLElement, change.imageURL)
 }
 
 //* Interact with the client backend (events and other)
