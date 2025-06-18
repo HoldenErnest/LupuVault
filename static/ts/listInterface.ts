@@ -355,7 +355,7 @@ function addItemEvents(anItem: HTMLElement) {
     var linkButtons = anItem.getElementsByClassName("change-item-image")[0];
     for (let i = 1; i < linkButtons.children.length; i++) {
         linkButtons.children[i].addEventListener("click", function(evt) {
-            requestImageUrl(anItem, i-1); // << the event when you click an item image
+            setImageUrl(anItem, i-1); // << the event when you click an item image
         });
     }
     //clone.onclick = clickItem;
@@ -448,22 +448,37 @@ function getNewDate() {
 }
 
 /**
- * Send a request to the server to fetch the image with googles api
+ * Using the Title from this element, request the api for a list of image URLs, which is stored and can be selected using the buttons
  * @param anItem Item in which to change the image
  * @param urlNum Out of the list of x images, which one do they want
  */
-function requestImageUrl(anItem: HTMLElement, urlNum: number) {
+async function setImageUrl(anItem: HTMLElement, urlNum: number) {
     var searchText = anItem.getElementsByClassName("item-title")[0].innerHTML;
     if (!searchText) {console.log("nothing to search for, in requestImageUrl");return;}
-    var lastImageEdit = anItem.querySelectorAll(".item-image div")[0] as HTMLElement;
+    var imageElem = anItem.querySelectorAll(".item-image div")[0] as HTMLElement; // the actual image div
     var lastImageNumber = urlNum;
-    if ((anItem.querySelectorAll(".item-image div")[0] as HTMLElement).dataset.value) {
-        var urlString = (anItem.querySelectorAll(".item-image div")[0] as HTMLElement).dataset.value;
-        updateImage(lastImageEdit, urlString!.split("\n")[lastImageNumber])
+    if (imageElem.dataset.url) {
+        if (imageElem.dataset.url == "-") return;
+        var urlString = (anItem.querySelectorAll(".item-image div")[0] as HTMLElement).dataset.url;
+        var newUrl = urlString!.split("\n")[lastImageNumber];
+        updateImage(imageElem, newUrl)
+        saveChange({itemID:Number(anItem.dataset.dbid), imageURL: newUrl});
+        madeEdit(anItem);
         return;
     }
-    //! window.api.send("get-urls", searchText);
-    //TODO: setup an interaction to fetch the urls
+    imageElem.dataset.url = "-" // ensure no other requests are made for this element (its loading be patient)
+    var allUrls = await requestImageUrls(searchText);
+
+
+    if (!allUrls) {console.log("no urls :("); return}; // there was a problem fetching an image.. //TODO: notify an error?
+    
+    var urlStr = "";
+    allUrls.map((u) => {urlStr += u + "\n"});
+    imageElem.dataset.url = urlStr;
+    var url = allUrls[lastImageNumber];
+    updateImage(imageElem, url); // this may not be the item you want unfortunatly, I dont know how to pass the item through when you request a url
+    saveChange({itemID:Number(anItem.dataset.dbid), imageURL: url});
+    madeEdit(anItem);
 }
 
 /**
@@ -634,7 +649,6 @@ export function displayItemChange(changeData: ClientList.listItem) {
     sort_all();
 }
 
-
 /**
  * Removes an element by its id
  * @param id 
@@ -646,7 +660,6 @@ export function removeByID(id: number) {
     console.log("removed the: " + theElement)
     sort_all();
 }
-
 
 /**
  * Loading animation
@@ -680,6 +693,10 @@ function saveRemove(id: number) {
  */
 function requestNewItem(): ClientList.listItem {
     return ClientList.requestNewListItem();
+}
+
+async function requestImageUrls(imgQuery: string): Promise<false | string[]> {
+    return await ClientList.requestImageUrls(imgQuery);
 }
 
 /**

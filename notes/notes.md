@@ -64,3 +64,4 @@ CSS:
  - its been a minute but ive been chipping away at things.
  - most of the core functionality is in place including list socket communication.
  - I also added a timeout to my connection pooling and it works pretty well, doesnt matter how many concurent connections there are.
+ - Added threading locks when requesting for images since `gis` is global which means requests and recieves can be interpreted out of sync.

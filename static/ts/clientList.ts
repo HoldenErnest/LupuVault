@@ -13,7 +13,6 @@ var changes:{[keys: string]: listItem} = {}
 var newItemID = -1; // give a temporary identification to each new item.
 
 var allLists: listDef[] = []
-
 var allItems:{[keys: string]: listItem} = {} //TODO: remove this? not needed
 
 export type listItem = {
@@ -49,9 +48,15 @@ async function init() {
  * Request an image from the api with the given search
  * @param imgQuery 
  */
-export async function requestImage(imgQuery: string) {
-    var urls = await downloadAPI("lists/img/" + imgQuery) as string[];
-    //TODO: send these to the currently selected item
+export async function requestImageUrls(imgQuery: string): Promise<string[] | false> {
+    var whichList = getCurrentListDef();
+    console.log("REQUEST")
+    var urls = await downloadAPI("img/" + imgQuery) as string[];
+    console.log("RECIEVED")
+    var sameList = getCurrentListDef();
+
+    if (whichList.owner != sameList.owner || whichList.listname != sameList.listname) return false; // the list changed since it asynchronously responded.
+    return urls;
 }
 
 /**

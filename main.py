@@ -7,6 +7,7 @@ from flask_socketio import SocketIO, join_room, leave_room, send, emit
 import os
 import sys
 from google_images_search import GoogleImagesSearch
+import threading
 
 # src/ MODULES
 sys.path.insert(0, '/home/lupu/LupuVault/src') # this is needed for the dotenv as well.
@@ -26,6 +27,7 @@ mimetypes.add_type('application/typescript', '.ts')
 
 
 gis = GoogleImagesSearch(os.getenv('IMG_API_KEY'), os.getenv('CSE_ID'))
+gis_lock = threading.Lock()
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -159,10 +161,13 @@ def getAllLists():
 def getImgFor(query):
     if (not signedIn()):
         return jsonify([])
-    gis.search({'q': query, 'num': 5,})
+    
     allurls = []
-    for image in gis.results():
-        allurls.append(image.url)
+
+    with gis_lock:
+        gis.search({'q': query, 'num': 5,})
+        for image in gis.results():
+            allurls.append(image.url)
 
     return allurls
 ### END APIS

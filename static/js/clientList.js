@@ -18,7 +18,15 @@ async function init() {
  * Request an image from the api with the given search
  * @param imgQuery
  */
-export async function requestImage(imgQuery) {
+export async function requestImageUrls(imgQuery) {
+    var whichList = getCurrentListDef();
+    console.log("REQUEST");
+    var urls = await downloadAPI("img/" + imgQuery);
+    console.log("RECIEVED");
+    var sameList = getCurrentListDef();
+    if (whichList.owner != sameList.owner || whichList.listname != sameList.listname)
+        return false; // the list changed since it asynchronously responded.
+    return urls;
 }
 /**
  * Trys open list
