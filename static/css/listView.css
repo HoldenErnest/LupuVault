@@ -138,6 +138,7 @@ body {
   border: 2px solid #111;
 }
 #new-list-button {
+  display: inline-block;
   margin: auto;
   background-color: #222;
   color: gainsboro;
@@ -150,6 +151,18 @@ body {
 #new-list-button:hover {
   background-color: #444;
   box-shadow: 1px 1px 4px 0px black;
+}
+
+#import-btn {
+  overflow: hidden;
+  display: inline;
+  font-weight: normal;
+  color: gainsboro;
+  font-size: 17px;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: auto;
 }
 
 /* END SIDEBAR */
@@ -408,7 +421,7 @@ option:hover {
   /* alot of bs to get the edges to not blur*/
   height: 103%;
   /*background-image: url("testimage.jpe");*/
-  background: linear-gradient(to left, transparent, #222), url("Images/back.jpg");
+  background: linear-gradient(to left, transparent, #222), url("/static/img/back-placeholder.jpg");
   filter: blur(0px);
   background-repeat: no-repeat;
   background-size: cover;

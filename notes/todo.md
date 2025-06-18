@@ -1,5 +1,5 @@
-share lists (whole rightclick menu for lists?)
+share lists (whole rightclick menu for lists?) <- FRIENDS system for this?
 
-Image API implementation.
+test importing more
 
-Import from CSV (UI for that? idk)
+REMOVE LISTS button

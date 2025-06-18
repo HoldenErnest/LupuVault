@@ -43,7 +43,15 @@ def register_events(socketio, getCurList, getUsername, join_room, leave_room, em
         else:
             emit('push-noti', {'status': 'error', 'message': "Failed Removing Item.."})
 
-
+    @socketio.on('import-list')
+    def importList(data):
+        """import a CSV string, convert it to go into the database"""
+        fileData = data["file"]
+        if (not fileData or fileData["size"] > 1000000 or len(fileData["content"]) > 1000000): # socket transfer size doesnt allow anything over a meg
+            print("Bad or too long file imported..")
+            return
+        if ("csv" in fileData["type"]):
+            database.saveCSVItems(getUsername(), data["owner"], data["listname"], fileData["content"])
 
     @socketio.on('save-listItem')
     def sendListItem(listItem):

@@ -34,6 +34,16 @@ export function removeItemFromServer(item: listItemExtended): void {
     socket.emit('remove-listItem', item);
 }
 
+export function importList(owner:string, listname:string, file: File): void {
+    file.text().then((value) => {
+        if (file.size > 1000000) return; //TODO: file size too large noti?
+        const sendObj = {owner:owner, listname:listname, file:{name: file.name, type: file.type, size: file.size, content: value}}
+        console.log("SENDING: " + value)
+        socket.emit('import-list', sendObj);
+
+    })
+}
+
 socket.on('update-listItem', (recieved: {[keys: string]: listItemExtended}) => {
     updateWithNewItem(recieved["item"])
 });

@@ -64,7 +64,11 @@ async function requestAllAccessableLists() {
 /**
  * Virtually creates a new list (any future saves will be sent as this new list)
  */
-export function createNewList(listname) {
+export function createNewList(listname, importFile) {
+    if (importFile) {
+        socket.importList(whoAmI, listname, importFile);
+    }
+    // client side using this list
     openList(whoAmI, listname, []);
     allLists.push({ owner: whoAmI, listname: listname });
     UI.displayAvailableLists(allLists, getCurrentListDef());

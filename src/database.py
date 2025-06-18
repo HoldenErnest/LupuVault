@@ -2,6 +2,7 @@
 # This module is used for handling anything that directly talks with the database acting as an interface
 
 import os
+import re
 import hashlib
 import time
 import uuid
@@ -85,7 +86,7 @@ def _trySelect(sql, vals, getCursor=False):
                 return res, cursor
             else:
                 return res
-        return None
+        return None, None
     except (mysql.connector.Error, mysql.connector.Warning) as e:
         print("SQL Select Error: ")
         print(e)
@@ -229,7 +230,7 @@ def getQueryFromListItem(listItem):
     if "rating" in listItem:
         update_fields.append("rating=%s")
         insert_fields.append("rating")
-        val_fields.append(listItem["rating"])
+        val_fields.append(re.findall("\d+", listItem["rating"])[0])
     if "tags" in listItem:
         update_fields.append("tags=%s")
         insert_fields.append("tags")
@@ -237,7 +238,7 @@ def getQueryFromListItem(listItem):
     if "date" in listItem:
         update_fields.append("date=%s")
         insert_fields.append("date")
-        val_fields.append(listItem["date"])
+        val_fields.append(listHandler.toDateTime(listItem["date"]))
     if "imageURL" in listItem:
         update_fields.append("imageURL=%s")
         insert_fields.append("imageURL")
@@ -256,6 +257,16 @@ def getQueryFromListItem(listItem):
         vals = tuple(val_fields)
         return (sql, vals)
     
+def saveCSVItems(connectedUser, owner, listname, csvString):
+    if (not userHasAccess(connectedUser, owner, listname, False)):
+        return listHandler.createError(403, "Forbidden: '" + connectedUser + "' does not have access to this list")
+    jsonArray = listHandler.csv_to_json(csvString, owner, listname)
+
+    for item in jsonArray:
+        theItem = updateListItem(connectedUser, item)
+        if (not theItem):
+            print("ERROR saving item from CSV")
+    print("Done saving all CSV items")
 
 def getListItemDict(connectedUser, listOwner, listname, itemID):
     """Returns a JSON object of the requested list"""

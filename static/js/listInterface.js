@@ -7,6 +7,7 @@ const escapeFocusElem = document.getElementById("escape-focus");
 const sortBtn = document.getElementById("sort-list");
 const parentOfList = document.getElementById('list-items');
 const loadingElem = document.getElementById('loader');
+const fileInput = document.getElementById('file-import');
 //Event listeners
 //saveBtn.addEventListener('click', onButtonSave);
 //loadListBtn.addEventListener('click', loadList);
@@ -47,9 +48,23 @@ document.onkeydown = function (event) {
         }
     }
 };
+fileInput.addEventListener('change', handleFiles, false);
 //*
 //* END GLOBAL EVENTS
 //*
+/**
+ * Handle file import
+ * @param event
+ */
+function handleFiles(event) {
+    const inputElement = event.target;
+    if (inputElement.files && inputElement.files.length > 0) {
+        const selectedFile = inputElement.files[0]; // Access the first selected file
+        document.getElementById("new-list-input").value = selectedFile.name.substring(0, selectedFile.name.length - 4);
+        console.log(selectedFile.name);
+    }
+}
+;
 function updateSearch() {
     var searched = searchbar.value;
     if (searched == "") {
@@ -497,8 +512,14 @@ function newList() {
     var listText = document.getElementById("new-list-input").value;
     listText = toUsableFilename(listText);
     console.log("creating list " + listText);
-    if (!listNameExists(listText)) {
-        openNewList(listText);
+    if (!listNameExists(listText) && listText.trim() != "") {
+        if (fileInput.files && fileInput.files.length > 0) {
+            const selectedFile = fileInput.files[0]; // Access the first selected file
+            openNewList(listText, selectedFile);
+        }
+        else {
+            openNewList(listText);
+        }
     }
     escapePress();
 }
@@ -678,8 +699,8 @@ function openList(listDef) {
  * TO, Create and start editing a new list by this name (if you dont save any changes the list wont be created/saved on the server)
  * @param listname name of the new list to create
  */
-function openNewList(listname) {
-    ClientList.createNewList(listname);
+function openNewList(listname, importFile) {
+    ClientList.createNewList(listname, importFile);
 }
 /**
  * TO, Save all Changes gathered so far

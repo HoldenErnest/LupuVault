@@ -147,8 +147,11 @@ def getList(owner, listname):
     if (not signedIn()):
         return jsonify([])
     currentUser = getUsername()
-    
-    return jsonify(database.getListDict(currentUser, owner, listname))
+    theList = database.getListDict(currentUser, owner, listname)
+    if (not theList):
+        return []
+    session["curList"] = (listname, owner)
+    return jsonify(theList)
 
 @app.route("/api/lists")
 def getAllLists():

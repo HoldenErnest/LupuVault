@@ -81,6 +81,8 @@ function openList(owner: string, listname: string, listData: listItem[]) {
     clearAllChanges();
     setupListDict(listData);
     updateUIFromDict()
+    //TODO: leave and join group on change of list.....
+    //!
 }
 
 async function requestAllAccessableLists() {
@@ -98,7 +100,11 @@ async function requestAllAccessableLists() {
 /**
  * Virtually creates a new list (any future saves will be sent as this new list)
  */
-export function createNewList(listname: string): any {
+export function createNewList(listname: string, importFile?: File): any {
+    if (importFile) {
+        socket.importList(whoAmI, listname, importFile);
+    }
+    // client side using this list
     openList(whoAmI, listname, [])
     allLists.push({owner: whoAmI, listname: listname});
     UI.displayAvailableLists(allLists, getCurrentListDef());

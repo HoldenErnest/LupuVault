@@ -3,16 +3,23 @@
 
 import csv
 import json
+import io
+from datetime import date, datetime, time
 
-def csv_to_json(csv_filepath, json_filepath):#! untested
-    data = []
-    with open(csv_filepath, 'r') as csvfile:
-        csv_reader = csv.DictReader(csvfile)
-        for row in csv_reader:
-            data.append(row)
+def csv_to_json(csvString, owner, listname):#! untested
+    csv_file = io.StringIO(csvString)
+    csv_reader = csv.DictReader(csv_file)
+    data = list(csv_reader)
 
-    with open(json_filepath, 'w') as jsonfile:
-        json.dump(data, jsonfile, indent=4)
+    for item in data:
+        item["owner"] = owner
+        item["listname"] = listname
+        if ("image" in item):
+            item["imageURL"] = item["image"]
+            del item["image"]
+    
+    print(str(data))
+    return data
 
 
 def listSQLToDict(cursor, sqlData):
@@ -30,3 +37,12 @@ def createError(code, message):
         'code': code
     }
     return error
+
+def toDateTime(olddate):
+    try:
+        datetime_object = datetime.strptime(olddate, '%b %d %Y')
+    except:
+        return olddate
+
+    # Format the datetime object into a MySQL DATETIME string
+    return datetime_object.strftime('%Y-%m-%d %H:%M:%S')

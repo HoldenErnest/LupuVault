@@ -27,6 +27,15 @@ export function removeItemFromServer(item) {
     console.log("SENDING: remove item");
     socket.emit('remove-listItem', item);
 }
+export function importList(owner, listname, file) {
+    file.text().then((value) => {
+        if (file.size > 1000000)
+            return; //TODO: file size too large noti?
+        const sendObj = { owner: owner, listname: listname, file: { name: file.name, type: file.type, size: file.size, content: value } };
+        console.log("SENDING: " + value);
+        socket.emit('import-list', sendObj);
+    });
+}
 socket.on('update-listItem', (recieved) => {
     updateWithNewItem(recieved["item"]);
 });
