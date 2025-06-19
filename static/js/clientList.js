@@ -40,8 +40,9 @@ export async function requestOpenList(user, listname) {
     var listData = listItems;
     openList(user, listname, listData);
 }
-export function removeList(params) {
-    //TODO: Not Urgent.. delete list if you own this (including the guests)
+export function removeList(owner, listname) {
+    console.log("trying to remove " + listname + " by " + owner);
+    socket.removeList(owner, listname);
 }
 function openList(owner, listname, listData) {
     currentListName = listname;
@@ -49,6 +50,7 @@ function openList(owner, listname, listData) {
     clearAllChanges();
     setupListDict(listData);
     updateUIFromDict();
+    socket.joinGroup();
 }
 async function requestAllAccessableLists() {
     var listPacked = await downloadAPI("lists");

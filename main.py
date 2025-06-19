@@ -87,7 +87,7 @@ def getCurList():
 def dontUseList(owner, listname):
     """If you are currently using this list somewhere, STOP. most likely its being removed"""
     curList = getCurList()
-
+    print("stopping using this list :()")
     if (curList[0] == owner and curList[1] == listname):
         del session["curList"]
 
@@ -151,6 +151,7 @@ def getList(owner, listname):
     if (not theList):
         return []
     session["curList"] = (listname, owner)
+    print(getCurList(), " is now the set list")
     return jsonify(theList)
 
 @app.route("/api/lists")
@@ -193,7 +194,7 @@ def loginPagePost():
         session["username"] = username
         session["password"] = password
         if ("curList" in session):
-            del session["curList"]
+            del session["curList"] # make sure if people log in on the same device, their current list isnt being overlapped
         return redirect("/")
 
     return createDetailedPage(template="login.html", pageExtra=PageExtras(noti=Notification(stat="warning", msg="Incorrect username or password")))

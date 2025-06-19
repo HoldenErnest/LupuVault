@@ -8,6 +8,7 @@ const sortBtn = document.getElementById("sort-list");
 const parentOfList = document.getElementById('list-items');
 const loadingElem = document.getElementById('loader');
 const fileInput = document.getElementById('file-import');
+const contextMenu = document.getElementById('listMenuRC');
 //Event listeners
 //saveBtn.addEventListener('click', onButtonSave);
 //loadListBtn.addEventListener('click', loadList);
@@ -18,6 +19,9 @@ document.getElementById("save-btn").onclick = saveAllChanges;
 document.getElementById("add-item-btn").onclick = newItem;
 document.getElementById("new-list-button").onclick = newList;
 document.getElementById("sort-order").onclick = toggleAscendingSort;
+document.getElementById("listRenameBtn").onclick = renameList;
+document.getElementById("listSettingsBtn").onclick = settingsForList;
+document.getElementById("listRemoveBtn").onclick = removeList;
 var sortOrder = 1;
 var tagsDictionary = {}; // keeps track of how many times this tag was used
 var hasNewItem = false;
@@ -26,6 +30,11 @@ var warnedNoSave = false; // if you try to leave a list, warn once
 //*
 //* START GLOBAL EVENTS:
 //*
+document.addEventListener('click', (event) => {
+    if (!contextMenu.contains(event.target)) { // hide the menu if its not a click in that menu
+        contextMenu.classList.remove('show');
+    }
+});
 document.onkeydown = function (event) {
     var source = event.target;
     if (event.key == "Enter" || event.key == "Escape") {
@@ -547,6 +556,16 @@ function createListHTML(list, isSelected) {
     clone.dataset.owner = list.owner;
     parentElement.insertBefore(clone, parentElement.firstChild);
     //* you can add a right click here
+    clone.addEventListener('contextmenu', function (event) {
+        event.preventDefault();
+        const contextMenu = document.getElementById('listMenuRC');
+        contextMenu.dataset.listname = this.dataset.listname;
+        contextMenu.dataset.owner = this.dataset.owner;
+        contextMenu.style.left = event.clientX + 'px';
+        contextMenu.style.top = event.clientY + 'px';
+        contextMenu.classList.add('show');
+        contextMenu.classList.remove('hidden');
+    });
     clone.addEventListener("click", function (evt) {
         //if the list is already selected dont change anything
         if (Array.from(this.classList).includes("selected"))
@@ -597,6 +616,25 @@ function updateValuesFromChange(elem, change) {
     if (change.imageURL)
         updateImage(elem.querySelectorAll(".item-image div")[0], change.imageURL);
 }
+//* START MENU RC buttons --------------
+function renameList() {
+    const listname = contextMenu.dataset.listname;
+    const owner = contextMenu.dataset.owner;
+    //TODO: implement
+}
+function settingsForList() {
+    const listname = contextMenu.dataset.listname;
+    const owner = contextMenu.dataset.owner;
+    //TODO: implement
+}
+function removeList() {
+    const listname = contextMenu.dataset.listname;
+    const owner = contextMenu.dataset.owner;
+    if (!listname || !owner)
+        return;
+    ClientList.removeList(owner, listname);
+}
+//* END MENU RC buttons --------------
 //* Interact with the client backend (events and other)
 /**
  * FROM, Displays list items as elements

@@ -19,6 +19,7 @@ def register_events(socketio, getCurList, getUsername, join_room, leave_room, em
 
     @socketio.on('join_group')
     def on_join():
+        print(getCurList(), " is the list")
         roomCode = getRoomCode() #your room code is a combination of the listOwner-listname
         print("joining room: ", roomCode)
         join_room(roomCode)
@@ -52,6 +53,16 @@ def register_events(socketio, getCurList, getUsername, join_room, leave_room, em
             return
         if ("csv" in fileData["type"]):
             database.saveCSVItems(getUsername(), data["owner"], data["listname"], fileData["content"])
+
+    @socketio.on('remove-list')
+    def removeList(owner, listname):
+        """Completely remove this list from the database. IMPORTANT to get this secure"""
+        if (not getUsername() == owner):
+            return
+        
+        print("PREPPING TO DELETE: ", listname, " by ", owner)
+
+        database.removeList(getUsername(), owner, listname)
 
     @socketio.on('save-listItem')
     def sendListItem(listItem):

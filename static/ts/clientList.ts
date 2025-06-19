@@ -71,8 +71,9 @@ export async function requestOpenList(user: string, listname: string) {
     var listData: listItem[] = listItems as listItem[];
     openList(user, listname, listData);
 }
-export function removeList(params?: string) {
-    //TODO: Not Urgent.. delete list if you own this (including the guests)
+export function removeList(owner: string, listname: string) {
+    console.log("trying to remove " + listname + " by " + owner)
+    socket.removeList(owner, listname);
 }
 
 function openList(owner: string, listname: string, listData: listItem[]) {
@@ -81,8 +82,7 @@ function openList(owner: string, listname: string, listData: listItem[]) {
     clearAllChanges();
     setupListDict(listData);
     updateUIFromDict()
-    //TODO: leave and join group on change of list.....
-    //!
+    socket.joinGroup()
 }
 
 async function requestAllAccessableLists() {

@@ -9,8 +9,6 @@ socket.on("connect", () => {
     statusElement?.classList.remove("disconnected");
     if (statusElement)
         statusElement.innerHTML = "⠇";
-    //* join the group that coorisponds with this list
-    joinGroup();
 });
 socket.on("disconnect", () => {
     console.log("disconnected");
@@ -36,6 +34,9 @@ export function importList(owner, listname, file) {
         socket.emit('import-list', sendObj);
     });
 }
+export function removeList(owner, listname) {
+    socket.emit('remove-list', owner, listname);
+}
 socket.on('update-listItem', (recieved) => {
     updateWithNewItem(recieved["item"]);
 });
@@ -47,7 +48,7 @@ socket.on('push-noti', (notification) => {
     console.log("recieving notification " + notification);
     pushNotification(notification);
 });
-function joinGroup() {
+export function joinGroup() {
     console.log("joining group");
     socket.emit("join_group");
 }

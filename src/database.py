@@ -153,6 +153,14 @@ def removeGuestForList(connectedUser, newGuest, listOwner, listname):
     vals = (listOwner, listname, newGuest)
     return _tryInsert(sql, vals)
 
+def removeGuestsForList(connectedUser, listOwner, listname):
+    """Remove all guests from a list (usually called because youre removing this list completely)"""
+    if (connectedUser != listOwner):
+        return False
+    sql = "DELETE FROM guests where owner = %s AND listname = %s"
+    vals = (listOwner, listname)
+    return _tryInsert(sql, vals)
+
 def getFirstList(user):
     """Get the last opened list"""
     lists = getListsInOrder(user)
@@ -331,9 +339,9 @@ def removeList(connectedUser, owner, listname):
     vals = (owner, listname)
 
     if (_tryInsert(sql, vals)):
-        #TODO: remove all guests from this list
-        #dontUseList(owner, listname)
-        return
+        return removeGuestsForList(connectedUser, owner, listname)
+        #dontUseList(owner, listname) ?
+    return False
 
 def _generate_salt():
     """Generate a random Unique salt for newly created users"""
