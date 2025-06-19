@@ -1,0 +1,7 @@
+[2025-06-19 10:52:46 -0400] [335057] [INFO] Starting gunicorn 23.0.0
+[2025-06-19 10:52:46 -0400] [335057] [ERROR] connection to ('0.0.0.0', 443) failed: [Errno 1] Operation not permitted
+[2025-06-19 10:52:47 -0400] [335057] [ERROR] connection to ('0.0.0.0', 443) failed: [Errno 1] Operation not permitted
+[2025-06-19 10:52:48 -0400] [335057] [ERROR] connection to ('0.0.0.0', 443) failed: [Errno 1] Operation not permitted
+[2025-06-19 10:52:49 -0400] [335057] [ERROR] connection to ('0.0.0.0', 443) failed: [Errno 1] Operation not permitted
+[2025-06-19 10:52:50 -0400] [335057] [ERROR] connection to ('0.0.0.0', 443) failed: [Errno 1] Operation not permitted
+[2025-06-19 10:52:52 -0400] [335057] [ERROR] Can't connect to ('0.0.0.0', 443)

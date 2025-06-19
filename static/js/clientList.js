@@ -50,7 +50,7 @@ function openList(owner, listname, listData) {
     clearAllChanges();
     setupListDict(listData);
     updateUIFromDict();
-    socket.joinGroup();
+    //! socket.joinGroup()
 }
 async function requestAllAccessableLists() {
     var listPacked = await downloadAPI("lists");

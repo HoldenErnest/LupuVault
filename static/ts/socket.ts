@@ -13,6 +13,7 @@ socket.on("connect", () => {
     statusElement?.classList.add("connected");
     statusElement?.classList.remove("disconnected");
     if (statusElement) statusElement.innerHTML = "⠇";
+    joinGroup()
 });
 
 socket.on("disconnect", () => {

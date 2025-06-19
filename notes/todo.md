@@ -1,5 +1,7 @@
 share lists (whole rightclick menu for lists?) <- FRIENDS system for this?
 
-test importing more
+test importing lists more
 
-REMOVE LISTS button
+imported methods need to be update -_-
+
+socketio wsgi -_-

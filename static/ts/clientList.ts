@@ -82,7 +82,7 @@ function openList(owner: string, listname: string, listData: listItem[]) {
     clearAllChanges();
     setupListDict(listData);
     updateUIFromDict()
-    socket.joinGroup()
+    //! socket.joinGroup()
 }
 
 async function requestAllAccessableLists() {

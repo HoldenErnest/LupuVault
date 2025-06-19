@@ -68,3 +68,7 @@ CSS:
 
 6/18/2025
  - holy shit I thought I was finished with import hell. Why do I need to reload imported methods. (I guess it makes sense if python reloads everything on any import but man is the whole idea annoying)
+
+6/19/2025
+ - I should have guessed. Socketio doesnt work through the wsgi I had setup. Apaches `mod_wsgi` only manages HTTPS. WSS connections should be managed through another wsgi (essentially as a seperate server). [Deployment options](https://flask-socketio.readthedocs.io/en/latest/deployment.html#embedded-server)
+ - gunicorn wouldnt work through apache which is kind of annoying or some other wsgi
