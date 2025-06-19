@@ -33,17 +33,19 @@ Login to [LupuVault](https://lupu.app/login) to view as a guest! Or Message an a
     - `DB_PASS=`
     - `DB_NAME=`
 - Create the MySQL database (or refactor for other). Follow the [Database Diagram](./notes/databases.md) for information on the tables
-- To serve via Apache:
+- To serve via Apache(optional):
+    - Create a linux service pointing to `app.run`
     - Create and enable a new site
-    - Include an `WSGIScriptAlias` for the app.wsgi
+        - Setup a reverse proxy pointing to the correct port for the created service.
+        - Handle both `ws://localhost/socket.io/` and `http://localhost/` conditions
     - Ensure the directory ('LupuVault') and its subdirectory 'static' are granted access
-    - Setup HTTPS by configuring the cert and key
+    - Setup Secure Sockets by configuring the cert and key
 
 ## :red_car: Run
 
 As Dev:
 
- - `$ ./devRun`
+ - `$ ./dev.run`
 
 As Apache WSGI:
 
