@@ -2,4 +2,4 @@
 
 source ./.venv/bin/activate
 
-gunicorn --worker-class eventlet -w 1 -b :2005 main:app
+gunicorn -k eventlet -w 1 -b :2005 main:app
