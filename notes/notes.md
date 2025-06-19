@@ -72,3 +72,7 @@ CSS:
 6/19/2025
  - I should have guessed. Socketio doesnt work through the wsgi I had setup. Apaches `mod_wsgi` only manages HTTPS. WSS connections should be managed through another wsgi (essentially as a seperate server). [Deployment options](https://flask-socketio.readthedocs.io/en/latest/deployment.html#embedded-server)
  - gunicorn wouldnt work through apache which is kind of annoying or some other wsgi
+ - DONE
+ - I ended up using an Apache site as a Reverse Proxy For my Service.
+ - I created a new Linux Service (`/etc/systemd/system/lupuapp.service`) which points to the `app.run` start script.
+ - I installed and started using `eventlet` to handle all the requests.

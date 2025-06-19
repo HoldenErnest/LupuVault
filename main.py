@@ -1,6 +1,8 @@
 # Holden Ernest - 5/12/2025
 # A Flask based web server for LupuVault
 # Production uses a wsgi to serve this
+import eventlet
+eventlet.monkey_patch()
 
 from flask import *
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
@@ -34,7 +36,7 @@ app.url_map.strict_slashes = False
 app.config['SECRET_KEY'] = os.getenv('FLASK_KEY')
 app.config["SESSION_PERMANENT"] = True
 
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"])
 
 import socketEvents # make sure the script is loaded to recieve the events
 
