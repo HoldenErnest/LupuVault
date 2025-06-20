@@ -9,7 +9,7 @@ socket.on("connect", () => {
     statusElement?.classList.remove("disconnected");
     if (statusElement)
         statusElement.innerHTML = "⠇";
-    joinGroup();
+    ////joinGroup()
 });
 socket.on("disconnect", () => {
     console.log("disconnected");

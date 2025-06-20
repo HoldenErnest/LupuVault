@@ -8,6 +8,7 @@ import os
 import sys
 from google_images_search import GoogleImagesSearch
 import threading
+from flask_session_mysql import MysqlSession
 
 # src/ MODULES
 sys.path.insert(0, '/home/lupu/LupuVault/src') # this is needed for the dotenv as well.
@@ -33,8 +34,13 @@ app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SECRET_KEY'] = os.getenv('FLASK_KEY')
 app.config["SESSION_PERMANENT"] = True
+app.config['MYSQL_SESSION_HOST'] = 'localhost'
+app.config['MYSQL_SESSION_USERNAME'] = os.getenv('DB_USER')
+app.config['MYSQL_SESSION_PASSWORD'] = os.getenv('DB_PASS')
+app.config['MYSQL_SESSION_DATABASE'] = os.getenv('DB_NAME')
 
-socketio = SocketIO(app, cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"])
+MysqlSession(app) # setup a session which flask and flask-socketio can communicate over
+socketio = SocketIO(app, manage_session=False, cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"]) #! THIS IS FOR DEPLOYMENT
 import socketEvents # make sure the script is loaded to recieve the events
 
 database.setG(g)

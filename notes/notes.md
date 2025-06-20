@@ -76,3 +76,6 @@ CSS:
  - I ended up using an Apache site as a Reverse Proxy For my Service.
  - I created a new Linux Service (`/etc/systemd/system/lupuapp.service`) which points to the `app.run` start script.
  - I installed and started using `eventlet` to handle all the requests.
+
+6/20/2025
+ - Sessions are now fixed Im using a custom Session which is configured to store user sessions within MySql allowing it to be used from Flask and Flask-Socketio

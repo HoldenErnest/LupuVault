@@ -7,6 +7,20 @@
 #from flask_socketio import join_room, leave_room #
 import database
 
+from flask import session
+
+def getCurListA():
+    """Returns current list, if there is none, assign one
+    {owner, listname}
+    """
+    if ("curList" in session):
+        return session["curList"]
+    session["curList"] = database.getFirstList(getUsernameA()) #inherently you have access to this list
+    return session["curList"]
+
+def getUsernameA():
+    return session["username"]
+
 def register_events(socketio, getCurList, getUsername, join_room, leave_room, emit):
 
     @socketio.on('connect')
@@ -19,7 +33,6 @@ def register_events(socketio, getCurList, getUsername, join_room, leave_room, em
 
     @socketio.on('join_group')
     def on_join():
-        print(getCurList(), " is the list")
         roomCode = getRoomCode() #your room code is a combination of the listOwner-listname
         print("joining room: ", roomCode)
         join_room(roomCode)
