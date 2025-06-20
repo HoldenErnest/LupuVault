@@ -40,7 +40,7 @@ app.config['MYSQL_SESSION_PASSWORD'] = os.getenv('DB_PASS')
 app.config['MYSQL_SESSION_DATABASE'] = os.getenv('DB_NAME')
 
 MysqlSession(app) # setup a session which flask and flask-socketio can communicate over
-socketio = SocketIO(app, manage_session=False, cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"]) #! THIS IS FOR DEPLOYMENT
+socketio = SocketIO(app, manage_session=False)#, cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"]) #! THIS IS FOR DEPLOYMENT
 import socketEvents # make sure the script is loaded to recieve the events
 
 database.setG(g)
@@ -89,11 +89,9 @@ def getCurList():
     session["curList"] = database.getFirstList(getUsername()) #inherently you have access to this list
     return session["curList"]
 
-def dontUseList(owner, listname):
+def dontUseList():
     """If you are currently using this list somewhere, STOP. most likely its being removed"""
-    curList = getCurList()
-    print("stopping using this list :()")
-    if (curList[0] == owner and curList[1] == listname):
+    if ("curList" in session):
         del session["curList"]
 
 def getUsername():
@@ -248,7 +246,7 @@ def newUserPost(key):
     
     return redirect("/login")
 
-socketEvents.register_events(socketio, getCurList, getUsername, join_room, leave_room, emit)
+socketEvents.register_events(socketio, getCurList, getUsername, dontUseList, join_room, leave_room, emit)
 
 
 if __name__ == '__main__':

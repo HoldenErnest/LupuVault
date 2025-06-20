@@ -7,21 +7,8 @@
 #from flask_socketio import join_room, leave_room #
 import database
 
-from flask import session
 
-def getCurListA():
-    """Returns current list, if there is none, assign one
-    {owner, listname}
-    """
-    if ("curList" in session):
-        return session["curList"]
-    session["curList"] = database.getFirstList(getUsernameA()) #inherently you have access to this list
-    return session["curList"]
-
-def getUsernameA():
-    return session["username"]
-
-def register_events(socketio, getCurList, getUsername, join_room, leave_room, emit):
+def register_events(socketio, getCurList, getUsername, dontUseList, join_room, leave_room, emit):
 
     @socketio.on('connect')
     def handle_connect():
@@ -76,6 +63,8 @@ def register_events(socketio, getCurList, getUsername, join_room, leave_room, em
         print("PREPPING TO DELETE: ", listname, " by ", owner)
 
         database.removeList(getUsername(), owner, listname)
+        dontUseList()
+
 
     @socketio.on('save-listItem')
     def sendListItem(listItem):

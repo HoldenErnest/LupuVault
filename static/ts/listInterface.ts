@@ -25,12 +25,14 @@ document.getElementById("sort-order")!.onclick = toggleAscendingSort;
 document.getElementById("listRenameBtn")!.onclick = renameList;
 document.getElementById("listSettingsBtn")!.onclick = settingsForList;
 document.getElementById("listRemoveBtn")!.onclick = removeList;
+document.getElementById("listShareBtn")!.onclick = shareList;
 
 var sortOrder = 1;
 var tagsDictionary: {[key: string]: number} = {} // keeps track of how many times this tag was used
 var hasNewItem = false;
 var madeChange = false;
 var warnedNoSave = false; // if you try to leave a list, warn once
+var warnedRemove = false;
 
 
 //*
@@ -78,11 +80,20 @@ fileInput.addEventListener('change', handleFiles, false);
 function handleFiles(event: Event) {
     const inputElement = event.target as HTMLInputElement;
     if (inputElement.files && inputElement.files.length > 0) {
+        (document.getElementById("import-btn") as HTMLElement).style.backgroundColor = '#040';
         const selectedFile = inputElement.files[0]; // Access the first selected file
         (document.getElementById("new-list-input") as HTMLInputElement).value = selectedFile.name.substring(0,selectedFile.name.length - 4);
-        console.log(selectedFile.name);
+        console.log(selectedFile.name + " was uploaded");
     }
+
 };
+function clearNewListInput() {
+    console.log("removing stupid green coloring")
+    fileInput.value = "";
+    fileInput.files = null;
+    (document.getElementById("new-list-input") as HTMLInputElement).value = "";
+    (document.getElementById("import-btn") as HTMLElement).style.backgroundColor = ""
+}
 
 function updateSearch() {
     var searched: string | null = searchbar.value;
@@ -550,6 +561,10 @@ function newList() { // crete a new list based off #new-list-input
         } else {
             openNewList(listText);
         }
+        clearNewListInput();
+        displayNotification("success", "Created list: '" + listText + "'");
+    } else {
+        displayNotification("error", "Failed to create list: '" + listText + "'");
     }
     escapePress();
 }
@@ -646,6 +661,22 @@ function updateValuesFromChange(elem: HTMLElement, change: ClientList.listItem) 
         updateImage(elem.querySelectorAll(".item-image div")[0] as HTMLElement, change.imageURL)
 }
 
+
+/**
+ * Called from removeList(), removes the HTML element from the UI
+ * @param listname 
+ */
+function removeListElem(listname:string, owner: string) {
+    var parentElement = document.getElementById("sidebar")!;
+    var currentLists = Array.from(parentElement.getElementsByClassName("sidebar-list"));
+    currentLists.forEach(list => { // remove all prev lists
+        const listElem = (list as HTMLElement);
+        if (listElem.dataset.listname == listname && listElem.dataset.owner == owner) {
+            list.remove();
+        }
+    });
+}
+
 //* START MENU RC buttons --------------
 function renameList() {
     const listname = contextMenu.dataset.listname
@@ -661,7 +692,22 @@ function removeList() {
     const listname = contextMenu.dataset.listname
     const owner = contextMenu.dataset.owner
     if (!listname || !owner) return;
+
+    if (!warnedRemove) {
+            warnedRemove = true;
+            displayNotification("warning",`Remove '${listname}'? Press again to continue`)
+            return;
+    }
+
+    warnedRemove = false;
+    //!removeListElem(listname, owner);
     ClientList.removeList(owner!, listname!);
+}
+function shareList() {
+    const listname = contextMenu.dataset.listname
+    const owner = contextMenu.dataset.owner
+    if (!listname || !owner) return;
+    //TODO: open username box to share with
 }
 //* END MENU RC buttons --------------
 

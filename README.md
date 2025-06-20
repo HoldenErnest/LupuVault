@@ -8,7 +8,7 @@ A redefined system for LupuVault. The Web App that holds list information define
 
  - Apache + Flask WSGI for maintainable hosting capabilities.
  - MySQL + RegEx for quick loading, searching, and sorting.
- - Secure Sockets + Restful APIs for responsive loading and communication.
+ - Secure Web Sockets + Restful APIs for responsive loading and communication.
  - Typescript compilation for a more robust frontend.
 
 ## :globe_with_meridians: How its going: [Lupu.app](https://lupu.app)

@@ -43,6 +43,18 @@ export async function requestOpenList(user, listname) {
 export function removeList(owner, listname) {
     console.log("trying to remove " + listname + " by " + owner);
     socket.removeList(owner, listname);
+    removeListDef(owner, listname);
+    UI.displayAvailableLists(allLists, allLists[0]);
+    if (allLists.length > 0) {
+        requestOpenList(allLists[0].owner, allLists[0].listname);
+    }
+}
+function removeListDef(owner, listname) {
+    allLists = allLists.filter(list => {
+        console.log(list);
+        return !(list.listname == listname && list.owner == owner);
+    });
+    console.log("all lists: " + allLists);
 }
 function openList(owner, listname, listData) {
     currentListName = listname;
