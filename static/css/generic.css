@@ -102,6 +102,38 @@ body::-webkit-scrollbar {
     color: #CCC;
     border: 2px solid #222;
 }
+
+select:hover {
+  background-color: #444;
+  box-shadow: 1px 1px 4px 0px black;
+}
+select { /*the dropdown*/
+  display: inline-block;
+  border: none;
+  overflow: auto;
+  outline: none;
+  /*-webkit-appearance: none;*/
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  resize: none;
+  text-indent: 1px;
+  text-overflow: '';
+
+  background-color: #222;
+  margin-left:0px;
+  margin-right:0px;
+  color: gainsboro;
+  padding: 5px;
+  font-weight: bold;
+}
+select option {
+  background-color: #111;
+  color: white;
+}
+option:hover {
+  background-color: #444;
+}
 /* #endregion */
 
 /* #region Notifications */

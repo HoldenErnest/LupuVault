@@ -40,7 +40,7 @@ app.config['MYSQL_SESSION_PASSWORD'] = os.getenv('DB_PASS')
 app.config['MYSQL_SESSION_DATABASE'] = os.getenv('DB_NAME')
 
 MysqlSession(app) # setup a session which flask and flask-socketio can communicate over
-socketio = SocketIO(app, manage_session=False)#, cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"]) #! THIS IS FOR DEPLOYMENT
+socketio = SocketIO(app, manage_session=False, cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"]) #! THIS IS FOR DEPLOYMENT
 import socketEvents # make sure the script is loaded to recieve the events
 
 database.setG(g)
@@ -82,7 +82,7 @@ class PageExtras:
 
 def getCurList():
     """Returns current list, if there is none, assign one
-    {owner, listname}
+    (owner, listname)
     """
     if ("curList" in session):
         return session["curList"]
@@ -178,6 +178,23 @@ def getImgFor(query):
 
     return allurls
 ### END APIS
+
+@app.route("/settings/<owner>/<listname>")
+def settingsPageDetailed(owner, listname):
+    """Settings for a specific list"""
+    if (not signedIn()):
+        return redirect("/login") #! warning noti
+    session['curList'] = (owner, listname)
+    return redirect("/settings")
+
+@app.route("/settings")
+def settingsPage():
+    """Generic Settings"""
+    if (not signedIn()):
+        return redirect("/login") #! warning noti
+    currentList = getCurList()
+    return render_template("settings.html", curListUsr=currentList[1], curListList = currentList[0], whoAmI=getUsername(), allLists=database.getListsInOrder(getUsername()))
+
 
 @app.route("/login", methods=['get'])
 def loginPageGet():

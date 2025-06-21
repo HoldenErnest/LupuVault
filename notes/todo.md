@@ -1,3 +1,7 @@
-share lists (whole rightclick menu for lists?) <- FRIENDS system for this?
+share, export, general settings
 
-test importing lists more
+phone optimization, double click problem
+
+version + connection.
+
+TAGS

@@ -1,0 +1,44 @@
+<!-- Holden Ernest - 1/11/2024 -->
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Settings - LupuVault</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/generic.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-x32.png') }}">
+</head>
+<body>
+    <div class="notification placeholder" id="placeholder-noti" value=""></div>
+    <input type="hidden" id="initListUser" value="{{ curListUsr }}">
+    <input type="hidden" id="initWhoAmI" value="{{ whoAmI }}">
+    <input type="hidden" id="initListList" value="{{ curListList }}">
+
+    <div id="notification-area"></div>
+    <div id="all-center">
+        <div id="title">Settings</div>
+        <form method="post">
+            <label for="options">Options:</label>
+            <input type="text" id="options" class="genericInput" name="options" maxlength="30" placeholder="not working.." required><br><br>
+            <label for="lists">Your Lists:</label>
+            <select id="lists" name="lists">
+                {% for list in allLists %}
+                <option value="{{ list }}" {% if list.1 == curListList and list.0 == curListUsr %} selected {% endif %}>{{ loop.index }}: {{ list.0 }} {% if list.1 != whoAmI %} ({{ list.1 }}) {% endif %}</option>
+                {% endfor %}
+            </select>
+            <button id="login" class="genericButton">Save</button>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/generic.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+    {% if notification is defined and notification != "" %}
+    <script type="text/javascript">
+        displayNotification("{{ notification.status }}", "{{notification.message}}")
+    </script>
+    {% endif %}
+</body>
+</html>
