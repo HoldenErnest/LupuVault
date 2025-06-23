@@ -4,7 +4,7 @@
 
 
 # LupuVault
-A redefined system for LupuVault. The Web App that holds list information defined by users. The app has an intuitive UI with extensive searching and sorting capability.
+A redefined system for LupuVault. LupuVault is a Web App that holds list information defined by users. Featuring intuitive UI with extensive searching and sorting capability.
 
  - Apache + Flask WSGI for maintainable hosting capabilities.
  - MySQL + RegEx for quick loading, searching, and sorting.
@@ -50,3 +50,10 @@ As Dev:
 As Apache WSGI:
 
  - `$ sudo ./apacheRefresh`
+
+ ## :checkered_flag: Results
+
+ <p align="center">
+  <img src="devImg/LupuVault-Main.png" alt="Overall Look and Feel of the Web App"/>
+  <img src="devImg/LupuVault-Search.png" alt="Extensive Searching and Sorting"/>
+</p>
