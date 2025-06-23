@@ -238,7 +238,11 @@ def getQueryFromListItem(listItem):
     if "rating" in listItem:
         update_fields.append("rating=%s")
         insert_fields.append("rating")
-        val_fields.append(re.findall("\d+", listItem["rating"])[0])
+        if (isinstance(listItem["rating"], str)):
+            theVal = re.findall("\d+", listItem["rating"])[0]
+        else:
+            theVal = listItem["rating"]
+        val_fields.append(theVal)
     if "tags" in listItem:
         update_fields.append("tags=%s")
         insert_fields.append("tags")
