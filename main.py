@@ -252,7 +252,7 @@ def newUserPost(key):
     password = request.form['password']
 
     madeUser = database.hasUsername(username) #TODO: do some kinda ajax instead
-    if (madeUser):
+    if (madeUser and madeUser != []):
         return createDetailedPage(template="addUser.html", pageExtra=PageExtras(noti=Notification(stat="warning", msg="Username already taken")))
 
     keyInfo = secretkeys.useOTUserKey(key) # only remove the key when the user is made

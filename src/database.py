@@ -86,7 +86,10 @@ def _trySelect(sql, vals, getCursor=False):
                 return res, cursor
             else:
                 return res
-        return None, None
+        if (getCursor):
+            return None, None
+        else:
+            return None
     except (mysql.connector.Error, mysql.connector.Warning) as e:
         print("SQL Select Error: ")
         print(e)
@@ -95,7 +98,9 @@ def _trySelect(sql, vals, getCursor=False):
 def hasUsername(username):
     sql = "SELECT username FROM users WHERE username = %s limit 1"
     vals = (username,)
-    if (_trySelect(sql, vals)):
+    res = _trySelect(sql, vals)
+    print("res: " , res)
+    if (res):
         return True
     return False
 

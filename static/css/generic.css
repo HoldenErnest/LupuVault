@@ -75,11 +75,11 @@ body::-webkit-scrollbar {
 /* #region Inputs */
 .genericButton {
 	color: grey;
-    width: 50px;
-    height: 30px;
+    width: 80px;
+    height: 40px;
     background-color: #222;
     border: none;
-    overflow: auto;
+    overflow: none;
     outline: none;
   	-webkit-box-shadow: none;
     -moz-box-shadow: none;
