@@ -707,7 +707,7 @@ function shareList() {
     const listname = contextMenu.dataset.listname
     const owner = contextMenu.dataset.owner
     if (!listname || !owner) return;
-    //TODO: open username box to share with
+    ClientList.shareList(owner, listname)
 }
 //* END MENU RC buttons --------------
 

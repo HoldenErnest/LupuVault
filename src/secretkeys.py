@@ -4,7 +4,18 @@ from datetime import datetime, timedelta
 
 
 onetimeUserKeys = {} # a list made up of a key and userlevel pair to determine a newly created user
+onetimeShareKeys = {} # keys for sharing lists
 
+def getOTShare(key):
+    """Returns the object for a list share if it exists on that key"""
+    if (key not in onetimeShareKeys):
+        return False
+    
+    keyInfo = onetimeShareKeys.pop(key)
+    if (keyInfo["expires"] > datetime.now()):
+        return keyInfo
+    else:
+        return False
 
 def hasOTUserKey(key):
     """Returns if the key exists for a user"""
@@ -32,9 +43,14 @@ def useOTUserKey(key):
         onetimeUserKeys.pop(key)
     return False
 
+def newOTShareKey(owner, listname, canWrite):
+    """Create a new onetime use key for a new user"""
+    key = _generate_random_key(64)
+    expireTime = datetime.now() + timedelta(hours=1)
+    onetimeShareKeys[key] = {"owner": owner, "listname": listname, "canWrite": canWrite, "expires": expireTime}
+    return key
 
-
-def newOTUserKey(userlevel): #TODO: get current time + 1 hour, to limit the key lifespan
+def newOTUserKey(userlevel):
     """Create a new onetime use key for a new user"""
     key = _generate_random_key(64)
     expireTime = datetime.now() + timedelta(hours=1)

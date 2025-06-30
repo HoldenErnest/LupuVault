@@ -11,7 +11,7 @@ import threading
 from flask_session_mysql import MysqlSession
 
 # src/ MODULES
-sys.path.insert(0, '/home/lupu/LupuVault/src') # this is needed for the dotenv as well.
+sys.path.insert(0, '/home/lupu/LupuVault-dev/src') # this is needed for the dotenv as well.
 import database
 import secretkeys
 import apis
@@ -40,7 +40,7 @@ app.config['MYSQL_SESSION_PASSWORD'] = os.getenv('DB_PASS')
 app.config['MYSQL_SESSION_DATABASE'] = os.getenv('DB_NAME')
 
 MysqlSession(app) # setup a session which flask and flask-socketio can communicate over
-socketio = SocketIO(app, manage_session=False, cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"]) #! THIS IS FOR DEPLOYMENT
+socketio = SocketIO(app, manage_session=False)#, cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"]) #! THIS IS FOR DEPLOYMENT
 import socketEvents # make sure the script is loaded to recieve the events
 
 database.setG(g)
@@ -195,6 +195,45 @@ def settingsPage():
     currentList = getCurList()
     return render_template("settings.html", curListUsr=currentList[1], curListList = currentList[0], whoAmI=getUsername(), allLists=database.getListsInOrder(getUsername()))
 
+@app.route("/share/<owner>/<listname>")
+def generateShareLink(owner, listname):
+    """ IF YOU HAVE ACCESS. Generate a link for sharing this list """
+    if (not signedIn()):
+        return redirect("/login")
+    
+    database.ensureListExists(getUsername(), owner, listname)
+    #generate a key for either rw or read
+    rkey = secretkeys.newOTShareKey(owner, listname, False)
+    wkey = secretkeys.newOTShareKey(owner, listname, True)
+
+    wurl = request.host_url + "share/" + wkey
+    rurl = request.host_url + "share/" + rkey
+    # important: jinja handles if this user is owner
+    return render_template("generateShareURL.html", whoAmI=getUsername(), listOwner=owner, listname=listname, wurl=wurl, rurl=rurl)
+
+@app.route("/share/<key>")
+def useShareLink(key):
+    """ The key is tied to a specific list and whether its READ or RW """
+    if (not signedIn()):
+        return redirect("/login")
+    
+    listInfo = secretkeys.getOTShare(key)
+    if (not listInfo):
+        return render_template("errors/incorrectKey.html")
+    
+    if (getUsername() == listInfo["owner"]):
+        return "You OWN this list dude.. Copy a new link and share it with someone else"
+    
+    if (listInfo["canWrite"]):
+        perms = "write"
+    else:
+        perms = "read"
+    
+    hasAccess = database.setGuestPermsForList(listInfo["owner"], getUsername(), listInfo["owner"], listInfo["listname"], perms)
+    if (hasAccess):
+        return redirect("/")
+    else:
+        return "something went wrong when setting your guest status, this key is now unactive"
 
 @app.route("/login", methods=['get'])
 def loginPageGet():

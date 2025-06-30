@@ -58,7 +58,7 @@ def register_events(socketio, getCurList, getUsername, dontUseList, join_room, l
     def removeList(owner, listname):
         """Completely remove this list from the database. IMPORTANT to get this secure"""
         if (not getUsername() == owner):
-            return
+            database.removeGuestForList(owner, getUsername(), owner, listname)
         
         print("PREPPING TO DELETE: ", listname, " by ", owner)
 
