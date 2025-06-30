@@ -40,7 +40,7 @@ app.config['MYSQL_SESSION_PASSWORD'] = os.getenv('DB_PASS')
 app.config['MYSQL_SESSION_DATABASE'] = os.getenv('DB_NAME')
 
 MysqlSession(app) # setup a session which flask and flask-socketio can communicate over
-socketio = SocketIO(app, manage_session=False, cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"]) #! THIS IS FOR DEPLOYMENT
+socketio = SocketIO(app, manage_session=False)#, cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"]) #! THIS IS FOR DEPLOYMENT
 import socketEvents # make sure the script is loaded to recieve the events
 
 database.setG(g)
@@ -195,6 +195,35 @@ def settingsPage():
     currentList = getCurList()
     return render_template("settings.html", curListUsr=currentList[1], curListList = currentList[0], whoAmI=getUsername(), allLists=database.getListsInOrder(getUsername()))
 
+@app.route("/share/<owner>/<listname>")
+def generateShareLink(owner, listname):
+    """ IF YOU HAVE ACCESS. Generate a link for sharing this list """
+    #generate a key for either rw or read
+    rkey = secretkeys.newOTShareKey(owner, listname, False)
+    wkey = secretkeys.newOTShareKey(owner, listname, True)
+
+    wurl = request.base_url + "/" + wkey
+    rurl = request.base_url + "/" + rkey
+    # important: jinja handles if this user is owner
+    return render_template("settings.html", whoAmI=getUsername(), listOwner=owner, listname=listname, wurl=wurl, rurl=rurl)
+
+@app.route("/share/<key>")
+def useShareLink(key):
+    """ The key is tied to a specific list and whether its READ or RW """
+    if (not signedIn()):
+        return redirect("/login")
+    
+    listInfo = secretkeys.getOTShare(key)
+    if (not listInfo):
+        return render_template("errors/incorrectKey.html")
+    
+    if (listInfo["canWrite"]):
+        perms = "write"
+    else:
+        perms = "read"
+    # give this user access to this list
+    database.setGuestPermsForList(getUsername(), getUsername(), listInfo["listOwner"], listInfo["listname"], perms)
+    return "you now have access to this list"
 
 @app.route("/login", methods=['get'])
 def loginPageGet():

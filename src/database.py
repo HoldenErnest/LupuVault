@@ -275,8 +275,8 @@ def getQueryFromListItem(listItem):
         return (sql, vals)
     
 def saveCSVItems(connectedUser, owner, listname, csvString):
-    if (not userHasAccess(connectedUser, owner, listname, False)):
-        return listHandler.createError(403, "Forbidden: '" + connectedUser + "' does not have access to this list")
+    if (not connectedUser == owner):
+        return listHandler.createError(403, "Forbidden: '" + connectedUser + "' isnt the owner for this new list")
     jsonArray = listHandler.csv_to_json(csvString, owner, listname)
 
     for item in jsonArray:

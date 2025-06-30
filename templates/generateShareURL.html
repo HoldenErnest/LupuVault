@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Key - LupuVault</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-x32.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/generic.css') }}">
+    <link rel="stylesheet" href="../static/css/generic.css">
+    
+</head>
+<body>
+    <div class="notification placeholder" id="placeholder-noti" value=""></div>
+    <div id="notification-area"></div>
+
+    {% if connectedUser == listOwner %}
+
+    <div id="all-center">
+        <div id="title">Share your list: '{{ listname }}'</div>
+        <h3>Read-Only Link</h3>
+        <div id="rlink" class="copyable">{{ rurl }}</div>
+        </br>
+        </br>
+        <h3>Read and Write Link</h3>
+        <div id="wrlink" class="copyable">{{ wurl }}</div>
+        <div class="tips-text">Click to copy the generated URL. The link is *ONE TIME USE* only. Send it to your friends</div>
+    </div>
+
+    {% else %}
+        <div id="title">You cannot share '{{ listname }}' because '{{ listOwner }}' owns it</div>
+    {% endif %}
+
+    <script type="module" src="{{ url_for('static', filename='js/generic.js') }}"></script>
+</body>
+</html>
