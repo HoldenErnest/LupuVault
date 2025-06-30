@@ -270,11 +270,11 @@ def generateURL():
         return render_template("errors/incorrectPerms.html")
     
     key = secretkeys.newOTUserKey("normal")
-    normalkeyurl = request.url + "/" + key
+    normalkeyurl = request.url + key
     adminkeyurl = ""
     if (_ul == "owner"):
         adminkey = secretkeys.newOTUserKey("admin")
-        adminkeyurl = request.url + "/" + adminkey
+        adminkeyurl = request.url + adminkey
     return render_template("generateURL.html", normalkeyurl=normalkeyurl, adminkeyurl=adminkeyurl)
 
 @app.route("/newuser/<key>", methods=['get'])
