@@ -117,6 +117,15 @@ async function downloadAPI(path) {
 export function requestNewListItem() {
     return { itemID: newItemID-- };
 }
+export function shareList(owner, listname) {
+    if (whoAmI != owner) {
+        displayNotification("warning", "You dont own this list");
+    }
+    else {
+        window.open(`./share/${owner}/${listname}`, '_blank').focus();
+        //window.location.href = `./share/${owner}/${listname}`;
+    }
+}
 /**
  * Add to the list of all changes
  * @param item a partially completed item with only the changes listed

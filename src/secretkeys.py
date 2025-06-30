@@ -17,8 +17,6 @@ def getOTShare(key):
     else:
         return False
 
-
-
 def hasOTUserKey(key):
     """Returns if the key exists for a user"""
     if (key not in onetimeUserKeys):

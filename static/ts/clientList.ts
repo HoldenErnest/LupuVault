@@ -156,6 +156,15 @@ export function requestNewListItem(): listItem {
     return {itemID: newItemID--};
 }
 
+export function shareList(owner: string, listname: string) {
+    if (whoAmI != owner) {
+        displayNotification("warning", "You dont own this list");
+    } else {
+        window.open(`./share/${owner}/${listname}`, '_blank')!.focus();
+        //window.location.href = `./share/${owner}/${listname}`;
+    }
+}
+
 
 /**
  * Add to the list of all changes

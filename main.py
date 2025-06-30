@@ -11,7 +11,7 @@ import threading
 from flask_session_mysql import MysqlSession
 
 # src/ MODULES
-sys.path.insert(0, '/home/lupu/LupuVault/src') # this is needed for the dotenv as well.
+sys.path.insert(0, '/home/lupu/LupuVault-dev/src') # this is needed for the dotenv as well.
 import database
 import secretkeys
 import apis
@@ -198,14 +198,18 @@ def settingsPage():
 @app.route("/share/<owner>/<listname>")
 def generateShareLink(owner, listname):
     """ IF YOU HAVE ACCESS. Generate a link for sharing this list """
+    if (not signedIn()):
+        return redirect("/login")
+    
+    database.ensureListExists(getUsername(), owner, listname)
     #generate a key for either rw or read
     rkey = secretkeys.newOTShareKey(owner, listname, False)
     wkey = secretkeys.newOTShareKey(owner, listname, True)
 
-    wurl = request.base_url + "/" + wkey
-    rurl = request.base_url + "/" + rkey
+    wurl = request.host_url + "share/" + wkey
+    rurl = request.host_url + "share/" + rkey
     # important: jinja handles if this user is owner
-    return render_template("settings.html", whoAmI=getUsername(), listOwner=owner, listname=listname, wurl=wurl, rurl=rurl)
+    return render_template("generateShareURL.html", whoAmI=getUsername(), listOwner=owner, listname=listname, wurl=wurl, rurl=rurl)
 
 @app.route("/share/<key>")
 def useShareLink(key):
@@ -217,13 +221,19 @@ def useShareLink(key):
     if (not listInfo):
         return render_template("errors/incorrectKey.html")
     
+    if (getUsername() == listInfo["owner"]):
+        return "You OWN this list dude.. Copy a new link and share it with someone else"
+    
     if (listInfo["canWrite"]):
         perms = "write"
     else:
         perms = "read"
-    # give this user access to this list
-    database.setGuestPermsForList(getUsername(), getUsername(), listInfo["listOwner"], listInfo["listname"], perms)
-    return "you now have access to this list"
+    
+    hasAccess = database.setGuestPermsForList(listInfo["owner"], getUsername(), listInfo["owner"], listInfo["listname"], perms)
+    if (hasAccess):
+        return redirect("/")
+    else:
+        return "something went wrong when setting your guest status, this key is now unactive"
 
 @app.route("/login", methods=['get'])
 def loginPageGet():
