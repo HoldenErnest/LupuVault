@@ -40,7 +40,7 @@ app.config['MYSQL_SESSION_PASSWORD'] = os.getenv('DB_PASS')
 app.config['MYSQL_SESSION_DATABASE'] = os.getenv('DB_NAME')
 
 MysqlSession(app) # setup a session which flask and flask-socketio can communicate over
-socketio = SocketIO(app, manage_session=False)#, cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"]) #! THIS IS FOR DEPLOYMENT
+socketio = SocketIO(app, manage_session=False, cors_allowed_origins=[f"https://{os.getenv('SERVER_HOST')}", "http://127.0.0.1"]) #! THIS IS FOR DEPLOYMENT
 import socketEvents # make sure the script is loaded to recieve the events
 
 database.setG(g)
